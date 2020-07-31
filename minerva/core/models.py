@@ -2,8 +2,8 @@ from django.db import models
 
 
 class Message(models.Model):
+    app_message_id = models.TextField(null=False)
     sent_date = models.DateTimeField(null=False)
-    received_date = models.DateTimeField(null=False)
     last_updated = models.DateTimeField(null=False)
     content = models.TextField(null=False, blank=False)
     normalized_content = models.TextField(null=True, blank=False)
@@ -11,7 +11,7 @@ class Message(models.Model):
     sent_by = models.ForeignKey('User', null=False, on_delete=models.DO_NOTHING)
     reply_to = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='replies')
     conversation = models.ForeignKey('Conversation', null=True, on_delete=models.DO_NOTHING)
-    hashtags = models.ManyToManyField('Hashtag', null=True)
+    hashtags = models.ManyToManyField('Hashtag')
 
 
 class Conversation(models.Model):
@@ -25,16 +25,27 @@ class Hashtag(models.Model):
 
 class User(models.Model):
     name = models.TextField(null=True, blank=True)
-    user_identifier = models.TextField(null=False, help_text="mostly phone number, can be email if necessary")
-    applications = models.ManyToManyField('ChatApp', null=False, related_name='users')
+    phone_number = models.TextField(null=True, blank=False)
+    email = models.TextField(null=True, blank=False)
 
 
 class ChatApp(models.Model):
     name = models.TextField(null=False, blank=False)
     bot_token = models.TextField(null=False, blank=False)
 
+    #@property
+    #def telegram(self):
+    #    return self.objects.filter(name='Telegram').first()
+
+
+class AppUsers(models.Model):
+    user = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
+    app = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE)
+    user_app_id = models.TextField(null=False, blank=False)
+
 
 class ChatGroup(models.Model):
+    app_chat_id = models.TextField(null=False, blank=False)
     name = models.TextField(null=True, blank=True)
     application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
-    members = models.ManyToManyField('User', null=False, related_name='chat_groups')
+    members = models.ManyToManyField('User', related_name='chat_groups')
