@@ -1,4 +1,5 @@
 import logging
+from django.conf import settings
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
 from minerva.core.models import Message, ChatApp, ChatGroup, AppUsers, User
@@ -16,14 +17,12 @@ Test bot used here: @MtaArchiverTestBot http://t.me/MtaArchiverTestBot
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-TOKEN = '1091823005:AAGKv37qO50fTAQy79F-rmetz-KsHNvFStE'
-
 
 class TelegramBot(object):
     def __init__(self, token):
         self.token = token
         self.chat_app, _ = ChatApp.objects.get_or_create(name='Telegram',
-                                                         bot_token=TOKEN)
+                                                         bot_token=settings.TELEGRAM_BOT_TOKEN)
 
     def run(self):
         logging.info('Starting up')

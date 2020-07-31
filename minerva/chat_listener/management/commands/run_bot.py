@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from minerva.chat_listener.management.bots.telegram_bot import TelegramBot
 
 CHAT_BOTS = {
-    'Telegram': (TelegramBot, '1091823005:AAGKv37qO50fTAQy79F-rmetz-KsHNvFStE')
+    'Telegram': (TelegramBot, settings.TELEGRAM_BOT_TOKEN)
 }
 
 
