@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'minerva.core'
+    'minerva.core',
+    'minerva.chat_listener'
 ]
 
 MIDDLEWARE = [
@@ -106,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
