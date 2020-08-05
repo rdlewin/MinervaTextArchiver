@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  createMuiTheme,
-  createStyles,
-  ThemeProvider,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
@@ -18,8 +13,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+        Minerva
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -139,7 +134,7 @@ theme = {
 
 const drawerWidth = 256;
 
-const styles = createStyles({
+const styles = {
   root: {
     display: 'flex',
     minHeight: '100vh',
@@ -164,11 +159,9 @@ const styles = createStyles({
     padding: theme.spacing(2),
     background: '#eaeff1',
   },
-});
+};
 
-export interface PaperbaseProps extends WithStyles<typeof styles> {}
-
-function Paperbase(props: PaperbaseProps) {
+function Paperbase(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -206,5 +199,9 @@ function Paperbase(props: PaperbaseProps) {
     </ThemeProvider>
   );
 }
+
+Paperbase.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
 export default withStyles(styles)(Paperbase);
