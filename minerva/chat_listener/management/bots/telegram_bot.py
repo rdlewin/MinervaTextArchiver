@@ -2,7 +2,7 @@ import logging
 from django.conf import settings
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
-from minerva.core.models import Message, ChatApp, ChatGroup, AppUsers, User
+from minerva.core.models import ChatApp, store_message
 
 """
 Telegram bot API documentation: https://core.telegram.org/bots
@@ -33,7 +33,7 @@ class TelegramBot(object):
         start_handler = CommandHandler('start', self.start)
         dispatcher.add_handler(start_handler)
 
-        message_handler = MessageHandler(Filters.text & (~Filters.command), self.store_message)
+        message_handler = MessageHandler(Filters.text & (~Filters.command), self.save_message)
         dispatcher.add_handler(message_handler)
 
         logging.info('Bot started')
@@ -42,49 +42,25 @@ class TelegramBot(object):
     def start(self, update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
-    def store_message(self, update, context):
+    def save_message(self, update, context):
         app_message = update.message
         log_message(app_message)
 
-        chat_group, group_created = ChatGroup.objects.get_or_create(application=self.chat_app,
-                                                                    app_chat_id=app_message.chat.id)
-        if group_created:
-            chat_group.name = app_message.chat.title
+        reply_message_id = None
+        if app_message.reply_to_message:
+            reply_message_id = app_message.reply_to_message.message_id
 
-        new_message = Message.objects.filter(app_message_id=app_message.message_id,
-                                             chat_group=chat_group).first()
-
-        if not new_message:
-            app_sender = AppUsers.objects.filter(app=self.chat_app,
-                                                 user_app_id=app_message.from_user.id).first()
-            if not app_sender:
-                new_user = User.objects.create(name=app_message.from_user.name)
-                app_sender = AppUsers.objects.create(
-                    user=new_user,
-                    app=self.chat_app,
-                    user_app_id=app_message.from_user.id
-                )
-
-            reply_to = None
-            if app_message.reply_to_message:
-                reply_to = Message.objects.filter(app_message_id=app_message.reply_to_message.message_id).first()
-
-            new_message = Message(
-                app_message_id=app_message.message_id,
-                sent_date=app_message.date,
-                last_updated=app_message.date,
-                chat_group=chat_group,
-                sent_by=app_sender.user,
-                reply_to=reply_to,
-                conversation=None
-            )
-
-        new_message.content = app_message.text
-
-        if app_message.edit_date:
-            new_message.last_updated = app_message.edit_date
-
-        new_message.save()
+        store_message(
+            chat_app=self.chat_app,
+            chat_group_id=app_message.chat.id,
+            chat_group_name=app_message.chat.title,
+            message_id=app_message.message_id,
+            message_content=app_message.text,
+            sender_id=app_message.from_user.id,
+            sender_name=app_message.from_user.name,
+            message_date=app_message.date,
+            reply_message_id=reply_message_id,
+            edit_date=app_message.date)
 
 
 def log_message(message):

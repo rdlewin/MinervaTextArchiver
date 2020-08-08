@@ -33,10 +33,6 @@ class ChatApp(models.Model):
     name = models.TextField(null=False, blank=False)
     bot_token = models.TextField(null=False, blank=False)
 
-    #@property
-    #def telegram(self):
-    #    return self.objects.filter(name='Telegram').first()
-
 
 class AppUsers(models.Model):
     user = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
@@ -49,3 +45,46 @@ class ChatGroup(models.Model):
     name = models.TextField(null=True, blank=True)
     application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
     members = models.ManyToManyField('User', related_name='chat_groups')
+
+
+def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name, message_date,
+                  reply_message_id, edit_date):
+
+    chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
+                                                                app_chat_id=chat_group_id)
+    if group_created:
+        chat_group.name = chat_group_name
+
+    new_message = Message.objects.filter(app_message_id=message_id,
+                                         chat_group=chat_group).first()
+
+    if not new_message:
+        app_sender = AppUsers.objects.filter(app=chat_app, user_app_id=sender_id).first()
+        if not app_sender:
+            new_user = User.objects.create(name=sender_name)
+            app_sender = AppUsers.objects.create(
+                user=new_user,
+                app=chat_app,
+                user_app_id=sender_id
+            )
+
+        reply_to = None
+        if reply_message_id:
+            reply_to = Message.objects.filter(app_message_id=reply_message_id).first()
+
+        new_message = Message(
+            app_message_id=message_id,
+            sent_date=message_date,
+            last_updated=message_date,
+            chat_group=chat_group,
+            sent_by=app_sender.user,
+            reply_to=reply_to,
+            conversation=None
+        )
+
+    new_message.content = message_content
+
+    if edit_date:
+        new_message.last_updated = edit_date
+
+    new_message.save()
