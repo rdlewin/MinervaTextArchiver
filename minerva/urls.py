@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from minerva.webapp.views import ConversationListView
+from minerva.webapp.views import ConversationStatsView, GroupStatsView
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('webapp/conversations/', ConversationListView.as_view()),
+    path('webapp/conversations/', ConversationStatsView.as_view()),
+    path('webapp/groups/', GroupStatsView.as_view())
 ]
