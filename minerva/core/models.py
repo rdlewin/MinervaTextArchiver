@@ -10,7 +10,7 @@ class Message(models.Model):
     chat_group = models.ForeignKey('ChatGroup', null=False, on_delete=models.CASCADE)
     sent_by = models.ForeignKey('User', null=False, on_delete=models.DO_NOTHING)
     reply_to = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='replies')
-    conversation = models.ForeignKey('Conversation', null=True, on_delete=models.DO_NOTHING)
+    conversation = models.ForeignKey('Conversation', null=True, on_delete=models.DO_NOTHING, related_name='messages')
     hashtags = models.ManyToManyField('Hashtag')
 
 
