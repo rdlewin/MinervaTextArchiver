@@ -31,7 +31,6 @@ class User(models.Model):
 
 class ChatApp(models.Model):
     name = models.TextField(null=False, blank=False)
-    bot_token = models.TextField(null=False, blank=False)
 
 
 class AppUsers(models.Model):
@@ -48,7 +47,7 @@ class ChatGroup(models.Model):
 
 
 def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name, message_date,
-                  reply_message_id, edit_date):
+                  reply_message_id=None, edit_date=None):
 
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
@@ -88,3 +87,4 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
         new_message.last_updated = edit_date
 
     new_message.save()
+    return new_message

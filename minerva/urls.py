@@ -20,6 +20,6 @@ from minerva.webapp.views import ConversationStatsView, GroupStatsView
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('webapp/conversations/', ConversationStatsView.as_view()),
-    path('webapp/groups/', GroupStatsView.as_view())
+    path('webapp/conversations/', ConversationStatsView.as_view(), name='conversation_stats'),
+    path('webapp/groups/', GroupStatsView.as_view(), name='group_stats')
 ]
