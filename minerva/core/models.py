@@ -10,11 +10,11 @@ class Message(models.Model):
     chat_group = models.ForeignKey('ChatGroup', null=False, on_delete=models.CASCADE)
     sent_by = models.ForeignKey('User', null=False, on_delete=models.DO_NOTHING)
     reply_to = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='replies')
-    conversation = models.ForeignKey('Conversation', null=True, on_delete=models.DO_NOTHING, related_name='messages')
+    discussion = models.ForeignKey('Discussion', null=True, on_delete=models.DO_NOTHING, related_name='messages')
     hashtags = models.ManyToManyField('Hashtag')
 
 
-class Conversation(models.Model):
+class Discussion(models.Model):
     first_message = models.ForeignKey('Message', null=False, on_delete=models.DO_NOTHING, related_name='+')
     hashtag = models.ForeignKey('Hashtag', null=False, on_delete=models.CASCADE)
 
@@ -78,7 +78,7 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
             chat_group=chat_group,
             sent_by=app_sender.user,
             reply_to=reply_to,
-            conversation=None
+            discussion=None
         )
 
     new_message.content = message_content

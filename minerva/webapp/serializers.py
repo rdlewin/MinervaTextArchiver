@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
 
-class ConversationStatsRequestSerializer(serializers.Serializer):
+class DiscussionStatsRequestSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(required=False)
     group_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_empty=True)
 
 
-class ConversationStatsSerializer(serializers.Serializer):
+class DiscussionStatsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     hashtag = serializers.CharField()
     group_id = serializers.IntegerField()

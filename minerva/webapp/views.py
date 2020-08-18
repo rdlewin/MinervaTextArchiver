@@ -2,36 +2,36 @@ from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 
-from minerva.core.models import Conversation, Message, ChatGroup
-from minerva.webapp.serializers import ConversationStatsRequestSerializer, ConversationStatsSerializer, \
+from minerva.core.models import Discussion, Message, ChatGroup
+from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer
 
 
 # TODO: implement filtering by group ID
-class ConversationStatsView(View):
+class DiscussionStatsView(View):
     def post(self, request):
-        request_serializer = ConversationStatsRequestSerializer(data=request.POST)
+        request_serializer = DiscussionStatsRequestSerializer(data=request.POST)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user_id = request_serializer.data.get('user_id')
 
-        conversations = Conversation.objects.filter(messages__chat_group__members__id=user_id)
+        discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
 
         response = []
-        for conversation in conversations:
-            conversation_chat_group = conversation.first_message.chat_group
-            conversation_messages = Message.objects.filter(conversation=conversation)
-            message_count = conversation_messages.count()
-            last_conversation_message = conversation_messages.order_by('-last_updated').first()
+        for discussion in discussions:
+            discussion_chat_group = discussion.first_message.chat_group
+            discussion_messages = Message.objects.filter(discussion=discussion)
+            message_count = discussion_messages.count()
+            last_discussion_message = discussion_messages.order_by('-last_updated').first()
 
             response.append(
-                ConversationStatsSerializer({
-                    "id": conversation.id,
-                    "hashtag": conversation.hashtag,
-                    "group_id": conversation_chat_group.id,
-                    "group_name": conversation_chat_group.name,
+                DiscussionStatsSerializer({
+                    "id": discussion.id,
+                    "hashtag": discussion.hashtag,
+                    "group_id": discussion_chat_group.id,
+                    "group_name": discussion_chat_group.name,
                     "message_count": message_count,
-                    "last_updated": last_conversation_message.last_updated
+                    "last_updated": last_discussion_message.last_updated
                 })
             )
 
