@@ -44,6 +44,7 @@ class ChatGroup(models.Model):
     name = models.TextField(null=True, blank=True)
     application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
     members = models.ManyToManyField('User', related_name='chat_groups')
+    hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups')
 
 
 def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name, message_date,

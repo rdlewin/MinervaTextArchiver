@@ -3,6 +3,7 @@ from django.conf import settings
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
 from minerva.core.models import ChatApp, store_message
+from minerva.core.signals import message_stored
 
 """
 Telegram bot API documentation: https://core.telegram.org/bots
@@ -50,7 +51,7 @@ class TelegramBot(object):
         if app_message.reply_to_message:
             reply_message_id = app_message.reply_to_message.message_id
 
-        store_message(
+        new_message = store_message(
             chat_app=self.chat_app,
             chat_group_id=app_message.chat.id,
             chat_group_name=app_message.chat.title,
@@ -61,6 +62,8 @@ class TelegramBot(object):
             message_date=app_message.date,
             reply_message_id=reply_message_id,
             edit_date=app_message.date)
+
+        message_stored.send(self.__class__, message=new_message)
 
 
 def log_message(message):
