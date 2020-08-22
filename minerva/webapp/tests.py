@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 import pytz
@@ -6,10 +7,72 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from minerva.core import models
-from minerva.core.models import User, ChatGroup, ChatApp
+from minerva.core.models import User, ChatGroup, ChatApp, Discussion, Hashtag
 
 
-# class ConversationStatsViewTest(TestCase):
+class ApiTestCase(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.client = APIClient()
+        self.chat_app = ChatApp.objects.create(name="Telegram")
+
+        self.user = User.objects.create(name='Alexander Hamilton')
+        self.group = ChatGroup.objects.create(app_chat_id=1,
+                                              name='MyShot',
+                                              application=self.chat_app)
+        self.group.members.add(self.user)
+        self.group.save()
+
+        self.hashtag = Hashtag.objects.create(content="@test")
+
+        message_content = "LaFayette @test"
+        message_id = 1800
+
+        self.message = models.store_message(self.chat_app,
+                                            self.group.id,
+                                            self.group.name,
+                                            message_id,
+                                            message_content,
+                                            self.user.id,
+                                            self.user.name,
+                                            datetime.now())
+        self.discussion = Discussion.objects.create(first_message=self.message, hashtag=self.hashtag)
+        self.message.discussions.add(self.discussion)
+
+
+class DiscussionMessageViewTest(ApiTestCase):
+    def test(self):
+        url = reverse('discussion_messages')
+        request_data = {
+            'user_id': self.user.id,
+            'discussion_id': self.message.discussions.first().id,
+            'page_num': 1
+        }
+        response = self.client.post(url,
+                                    data=json.dumps(request_data),
+                                    format='json')
+        self.assertEquals(response.status_code, 200)
+
+        expected = [{
+            'id': self.message.id,
+            'app_message_id': self.message.app_message_id,
+            'sent_date': self.message.sent_date.isoformat(),
+            'last_updated': self.message.last_updated.isoformat(),
+            'content': self.message.content,
+            'sender_id': self.message.sent_by.id,
+            'sender_name': self.message.sent_by.name,
+            'discussion_ids': [self.discussion.id],
+            'discussion_hashtags': [self.discussion.hashtag.content],
+            'reply_to_id': None,
+            'hashtags': [hashtag.content for hashtag in self.message.hashtags.all()],
+        }]
+        response_content = response.json()
+
+        self.assertEquals(len(response_content), 1)
+        self.assertDictEqual(response_content[0], expected[0])
+
+
+# class ConversationStatsViewTest(ApiTestCase):
 #
 #     def test(self):
 #         client = RequestsClient()
@@ -17,41 +80,58 @@ from minerva.core.models import User, ChatGroup, ChatApp
 #         self.assertEquals(response.status_code, 200)
 
 
-class GroupStatsViewTest(TestCase):
+class DiscussionSummaryViewTest(ApiTestCase):
+    def test(self):
+        url = reverse('discussion_summary')
+        request_data = {
+            'user_id': self.user.id,
+            'filters': {},
+            'page_num': 1
+        }
+        response = self.client.post(url,
+                                    data=json.dumps(request_data),
+                                    format='json')
+        self.assertEquals(response.status_code, 200)
 
-    def setUp(self):
-        self.client = APIClient()
-        self.chat_app = ChatApp.objects.create(name="Telegram")
+        expected = [{
+            'discussion_id': self.discussion.id,
+            'hashtag': self.discussion.hashtag.content,
+            'group_id': self.message.chat_group_id,
+            'message_count': self.discussion.messages.count(),
+            'last_updated': self.message.last_updated,
+            'first_message': self.message,
+            'latest_messages': [self.message]
+        }]
+        response_content = response.json()
+
+        self.assertEquals(len(response_content), 1)
+        self.assertDictEqual(response_content[0], expected[0])
+
+
+class GroupStatsViewTest(ApiTestCase):
 
     def test(self):
         # parameters - user, group, last_updated, app_name
-        user = User.objects.create(name='Alexander Hamilton')
-        group = ChatGroup.objects.create(app_chat_id=1,
-                                         name='MyShot',
-                                         application=self.chat_app)
-        group.members.add(user)
-        group.save()
-
         message_content = "LaFayette"
         message_id = 1800
 
         new_message = models.store_message(self.chat_app,
-                                           group.id,
-                                           group.name,
+                                           self.group.id,
+                                           self.group.name,
                                            message_id,
                                            message_content,
-                                           user.id,
-                                           user.name,
+                                           self.user.id,
+                                           self.user.name,
                                            datetime.now(pytz.utc))
 
         url = reverse('group_stats')
         response = self.client.post(url,
-                                    data={'user_id': user.id})
+                                    data={'user_id': self.user.id})
         self.assertEquals(response.status_code, 200)
         expected = {
-            'id': group.id,
-            'name': group.name,
-            'last_updated': new_message.last_updated.isoformat().replace('+00:00', 'Z'),
+            'id': self.group.id,
+            'name': self.group.name,
+            'last_updated': new_message.last_updated.isoformat(),
             'app_name': self.chat_app.name
         }
         response_content = response.json()
@@ -69,3 +149,14 @@ class GroupStatsViewTest(TestCase):
     - a member has access to data only for groups he is a member of
     - same ChatGroup ID for 2 groups in 2 different apps - check that our product differentiates them 
     '''
+
+    # request_data = {
+    #     'user_id': self.user.id,
+    #     'filters': {
+    #         'group_ids': None,
+    #         'conversation_ids': None,
+    #         'sender_ids': None,
+    #         'min_date': None,
+    #         'max_date': None,
+    #         'freetext_search': "",
+    #     },
