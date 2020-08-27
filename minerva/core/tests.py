@@ -32,6 +32,7 @@ class CoreModelTestCase(TestCase):
 
         self.assertEquals(new_message.content, message_content)
         self.assertEquals(Message.objects.filter(id=new_message.id).count(), 1)
+        self.assertEquals(new_message.hashtags.all().count(), 0)
 
     def test_store_message_existing_group_and_user(self):
         sender = User.objects.create(name=self.sender_name)
@@ -55,3 +56,21 @@ class CoreModelTestCase(TestCase):
 
         self.assertEquals(new_message.content, message_content)
         self.assertEquals(Message.objects.filter(id=new_message.id).count(), 1)
+
+    def test_store_message_multiple_hashtags(self):
+        message_content = "hello world #just_you_wait #MyShot"
+        group_id = 123
+        sender_id = 1234
+        message_id = 12345
+
+        new_message = models.store_message(self.chat_app,
+                                           group_id,
+                                           self.group_name,
+                                           message_id,
+                                           message_content,
+                                           sender_id,
+                                           self.sender_name,
+                                           self.test_time)
+
+        self.assertEquals(list(new_message.hashtags.all().values_list('content', flat=True)),
+                          ['just_you_wait', 'MyShot'])

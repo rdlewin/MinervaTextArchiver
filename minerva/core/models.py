@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 
 
@@ -47,9 +49,9 @@ class ChatGroup(models.Model):
     hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups')
 
 
-def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name, message_date,
+def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
+                  message_date,
                   reply_message_id=None, edit_date=None):
-
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
     if group_created:
@@ -87,4 +89,9 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
         new_message.last_updated = edit_date
 
     new_message.save()
+
+    for hashtag_content in re.findall(r"#(\w+)", message_content):
+        hashtag, _ = Hashtag.objects.get_or_create(content=hashtag_content)
+        new_message.hashtags.add(hashtag)
+
     return new_message
