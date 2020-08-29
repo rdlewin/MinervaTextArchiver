@@ -7,6 +7,13 @@ from minerva.core.models import Discussion, Message
 ClassificationResult = namedtuple('ClassificationResult', ['discussion', 'confidence', 'is_new'])
 
 
+# class ClassificationResult(object):
+#     def __init__(self, discussion, confidence, is_new):
+#         self.discussion = discussion
+#         self.confidence = confidence
+#         self.is_new = is_new
+
+
 class AbstractClassifier(ABC):
     def classify(self, message: Message) -> List[ClassificationResult]:
         """
@@ -51,7 +58,7 @@ class ReplyClassifier(AbstractClassifier):
         classified_discussions = []
 
         if parent_discussions_count == 1:
-            return list(ClassificationResult(parent_discussions.first(), 1, False))
+            return [ClassificationResult(parent_discussions.first(), 1, False)]
         else:
             for discussion in parent_discussions:
                 classified_discussions.append(ClassificationResult(discussion, 0.5, False))

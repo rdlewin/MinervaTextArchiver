@@ -8,7 +8,7 @@ from minerva.core import models
 from minerva.core.models import ChatApp, Discussion, Hashtag
 
 
-class HashtagClassifierTest(TestCase):
+class ClassifierTestCase(TestCase):
     def setUp(self) -> None:
         self.chat_app = ChatApp.objects.create(name="Telegram")
 
@@ -16,6 +16,8 @@ class HashtagClassifierTest(TestCase):
         self.sender_name = "John Smith"
         self.test_time = datetime.now(pytz.utc)
 
+
+class HashtagClassifierTest(ClassifierTestCase):
     def test_classify_message_no_hashtags(self):
         message_content = "hello world"
         group_id = 123
@@ -95,5 +97,135 @@ class HashtagClassifierTest(TestCase):
                                             heuristics.ClassificationResult(expected_discussion_2, 1, True)])
 
 
-class ReplyClassifierTest(TestCase):
+class ReplyClassifierTest(ClassifierTestCase):
+    def test_not_a_reply(self):
+        message_content = "I'm an orphan"
+        group_id = 123
+        sender_id = 1234
+        message_id = 12345
+
+        new_message = models.store_message(self.chat_app,
+                                           group_id,
+                                           self.group_name,
+                                           message_id,
+                                           message_content,
+                                           sender_id,
+                                           self.sender_name,
+                                           self.test_time)
+
+        self.assertEquals(new_message.reply_to, None)
+        classifications = heuristics.ReplyClassifier().classify(new_message)
+
+        self.assertEquals(classifications, [])
+
+    def test_no_discussion_for_parent_message(self):
+        message_content = "My parent has no discussions"
+        group_id = 123
+        sender_id = 1234
+        message_id = 12345
+
+        parent_message = models.store_message(self.chat_app,
+                                              group_id,
+                                              self.group_name,
+                                              message_id,
+                                              message_content,
+                                              sender_id,
+                                              self.sender_name,
+                                              self.test_time)
+
+        new_message = models.store_message(self.chat_app,
+                                           group_id,
+                                           self.group_name,
+                                           message_id + 1,
+                                           message_content,
+                                           sender_id,
+                                           self.sender_name,
+                                           self.test_time,
+                                           reply_message_id=parent_message.app_message_id)
+
+        num_of_parent_discussions = new_message.reply_to.discussions.all().count()
+        self.assertEquals(num_of_parent_discussions, 0)
+        classifications = heuristics.ReplyClassifier().classify(new_message)
+
+        self.assertEquals(classifications, [])
+
+    def test_single_discussion_for_parent(self):
+        message_content = "My parent belongs to 1 discussions"
+        group_id = 123
+        sender_id = 1234
+        message_id = 12345
+
+        parent_message = models.store_message(self.chat_app,
+                                              group_id,
+                                              self.group_name,
+                                              message_id,
+                                              message_content,
+                                              sender_id,
+                                              self.sender_name,
+                                              self.test_time)
+
+        parent_discussion = Discussion.objects.create(first_message=parent_message, hashtag=None)
+        parent_message.discussions.add(parent_discussion)
+
+        new_message = models.store_message(self.chat_app,
+                                           group_id,
+                                           self.group_name,
+                                           message_id + 1,
+                                           message_content,
+                                           sender_id,
+                                           self.sender_name,
+                                           self.test_time,
+                                           reply_message_id=parent_message.app_message_id)
+
+        num_of_parent_discussions = new_message.reply_to.discussions.all().count()
+        self.assertEquals(num_of_parent_discussions, 1)
+        classifications = heuristics.ReplyClassifier().classify(new_message)
+        self.assertEquals(len(classifications), 1)
+
+        self.assertEquals(classifications, [heuristics.ClassificationResult(parent_discussion, 1, False)])
+
+    def test_two_discussions_for_parent(self):
+        message_content = "My parent belongs to 2 discussions"
+        group_id = 123
+        sender_id = 1234
+        message_id = 12345
+
+        parent_message = models.store_message(self.chat_app,
+                                              group_id,
+                                              self.group_name,
+                                              message_id,
+                                              message_content,
+                                              sender_id,
+                                              self.sender_name,
+                                              self.test_time)
+
+        parent_discussion_1 = Discussion.objects.create(first_message=parent_message, hashtag=None)
+        parent_discussion_2 = Discussion.objects.create(first_message=parent_message, hashtag=None)
+
+        parent_message.discussions.add(parent_discussion_1)
+        parent_message.discussions.add(parent_discussion_2)
+
+        new_message = models.store_message(self.chat_app,
+                                           group_id,
+                                           self.group_name,
+                                           message_id + 1,
+                                           message_content,
+                                           sender_id,
+                                           self.sender_name,
+                                           self.test_time,
+                                           reply_message_id=parent_message.app_message_id)
+
+        num_of_parent_discussions = new_message.reply_to.discussions.all().count()
+        self.assertEquals(num_of_parent_discussions, 2)
+        classifications = heuristics.ReplyClassifier().classify(new_message)
+        self.assertEquals(len(classifications), 2)
+
+        self.assertEquals(classifications, [heuristics.ClassificationResult(parent_discussion_1, 0.5, False),
+                                            heuristics.ClassificationResult(parent_discussion_2, 0.5, False)])
+
+    # reply to a message with no discussions
+    # reply to a message with 1 discussion
+    # reply to a message with multiple discussions
+    # reply to a message with X discussions + the reply includes a new hashtag -> creates a new discussion (?) - seems not relevant here
+
     pass
