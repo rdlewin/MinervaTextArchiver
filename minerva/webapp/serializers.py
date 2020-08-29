@@ -68,9 +68,9 @@ class DiscussionSummaryFilterSerializer(serializers.Serializer):
 
 
 class DiscussionSummaryRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
+    user_id = serializers.IntegerField(required=False)
     filters = DiscussionSummaryFilterSerializer(required=False)
-    page_num = serializers.IntegerField(required=True)
+    page_num = serializers.IntegerField(required=False)
 
 
 class DiscussionSummarySerializer(serializers.Serializer):
