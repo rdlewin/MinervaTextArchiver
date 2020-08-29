@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from minerva.core.models import Discussion, Message
-
 
 class DiscussionMessageRequestSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(required=True)
@@ -105,4 +103,9 @@ class GroupStatsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     last_updated = serializers.DateTimeField()
+
+
+class AppGroupsSerializer(serializers.Serializer):
+    app_id = serializers.IntegerField()
     app_name = serializers.CharField()
+    groups = GroupStatsSerializer(many=True)

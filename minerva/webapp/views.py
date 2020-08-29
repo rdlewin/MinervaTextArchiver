@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from minerva.core.models import Discussion, Message, ChatGroup
 from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
-    DiscussionMessageRequestSerializer, DiscussionSummarySerializer
+    DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer
 
 
 class DiscussionMessagesView(APIView):
@@ -103,7 +103,7 @@ class DiscussionStatsView(APIView):
         return JsonResponse([r.data for r in response], status=status.HTTP_200_OK)
 
 
-class GroupStatsView(APIView):
+class AppGroupStatsView(APIView):
     def post(self, request):
         request_serializer = GroupStatsRequestSerializer(data=request.POST)
         if not request_serializer.is_valid():
@@ -112,7 +112,7 @@ class GroupStatsView(APIView):
 
         groups = ChatGroup.objects.filter(members__id=user_id)
 
-        response = []
+        app_groups = {}
         for group in groups:
             group_messages = Message.objects.filter(chat_group=group)
             last_group_message = group_messages.order_by('-last_updated').first()
@@ -120,13 +120,20 @@ class GroupStatsView(APIView):
             if last_group_message:
                 last_updated = last_group_message.last_updated.isoformat()
 
-            response.append(
-                GroupStatsSerializer({
-                    "id": group.id,
-                    "name": group.name,
-                    "last_updated": last_updated,
-                    "app_name": group.application.name
-                })
-            )
+            group_stats = GroupStatsSerializer({'id': group.id,
+                                                'name': group.name,
+                                                'last_updated': last_updated})
+            if group.application not in app_groups:
+                app_groups[group.application] = [group_stats]
+            else:
+                app_groups[group.application].append(group_stats)
 
-        return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
+            response = []
+            for app, groups in app_groups.items():
+                response.append(AppGroupsSerializer({
+                    'app_id': app.id,
+                    'app_name': app.name,
+                    'groups': [group.data for group in groups]
+                }))
+
+            return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
