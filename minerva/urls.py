@@ -22,5 +22,5 @@ urlpatterns = [
     path('webapp/discussions/stats', DiscussionStatsView.as_view(), name='discussion_stats'),
     path('webapp/discussions/summary', DiscussionSummaryView.as_view(), name='discussion_summary'),
     path('webapp/messages/', DiscussionMessagesView.as_view(), name='discussion_messages'),
-    path('webapp/groups/', AppGroupStatsView.as_view(), name='group_stats')
+    path('webapp/apps/groups', AppGroupStatsView.as_view(), name='app_group_stats')
 ]

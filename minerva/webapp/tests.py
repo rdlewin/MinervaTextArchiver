@@ -124,7 +124,7 @@ class GroupStatsViewTest(ApiTestCase):
                                            self.user.name,
                                            datetime.now(pytz.utc))
 
-        url = reverse('group_stats')
+        url = reverse('app_group_stats')
         response = self.client.post(url,
                                     data={'user_id': self.user.id})
         self.assertEquals(response.status_code, 200)
