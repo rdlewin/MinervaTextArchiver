@@ -124,19 +124,25 @@ class GroupStatsViewTest(ApiTestCase):
                                            self.user.name,
                                            datetime.now(pytz.utc))
 
-        url = reverse('group_stats')
+        url = reverse('app_group_stats')
         response = self.client.post(url,
                                     data={'user_id': self.user.id})
         self.assertEquals(response.status_code, 200)
         expected = {
-            'id': self.group.id,
-            'name': self.group.name,
-            'last_updated': new_message.last_updated.isoformat(),
-            'app_name': self.chat_app.name
+            'app_id': self.chat_app.id,
+            'app_name': self.chat_app.name,
+            'groups': [
+                {
+                    'id': self.group.id,
+                    'name': self.group.name,
+                    'last_updated': new_message.last_updated.isoformat(),
+                }
+            ]
         }
         response_content = response.json()
 
         self.assertEquals(len(response_content), 1)
+        self.assertEquals(len(response_content[0]['groups']), 1)
         self.assertDictEqual(response_content[0], expected)
 
     '''test cases -

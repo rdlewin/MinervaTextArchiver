@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 
 
@@ -16,7 +18,11 @@ class Message(models.Model):
 
 class Discussion(models.Model):
     first_message = models.ForeignKey('Message', null=False, on_delete=models.DO_NOTHING, related_name='+')
-    hashtag = models.ForeignKey('Hashtag', null=False, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey('Hashtag', null=True, on_delete=models.CASCADE)
+
+    # TODO: should be populated
+    def from_hash_tag(self):
+        pass
 
 
 class Hashtag(models.Model):
@@ -47,9 +53,8 @@ class ChatGroup(models.Model):
     hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups')
 
 
-def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name, message_date,
-                  reply_message_id=None, edit_date=None):
-
+def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
+                  message_date, reply_message_id=None, edit_date=None):
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
     if group_created:
@@ -70,7 +75,8 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
 
         reply_to = None
         if reply_message_id:
-            reply_to = Message.objects.filter(app_message_id=reply_message_id).first()
+            reply_to = Message.objects.filter(app_message_id=reply_message_id,
+                                              chat_group=chat_group).first()
 
         new_message = Message(
             app_message_id=message_id,
@@ -87,4 +93,9 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
         new_message.last_updated = edit_date
 
     new_message.save()
+
+    for hashtag_content in re.findall(r"#(\w+)", message_content):
+        hashtag, _ = Hashtag.objects.get_or_create(content=hashtag_content)
+        new_message.hashtags.add(hashtag)
+
     return new_message
