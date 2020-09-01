@@ -21,22 +21,22 @@ import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
 
 const categories = [
   {
-    id: 'Develop',
+    id: 'Groups',
     children: [
-      { id: 'Authentication', icon: <PeopleIcon />, active: true },
-      { id: 'Database', icon: <DnsRoundedIcon /> },
-      { id: 'Storage', icon: <PermMediaOutlinedIcon /> },
-      { id: 'Hosting', icon: <PublicIcon /> },
-      { id: 'Functions', icon: <SettingsEthernetIcon /> },
-      { id: 'ML Kit', icon: <SettingsInputComponentIcon /> },
+      // { id: 'Authentication', icon: <PeopleIcon />, active: true },
+      // { id: 'Database', icon: <DnsRoundedIcon /> },
+      // { id: 'Storage', icon: <PermMediaOutlinedIcon /> },
+      // { id: 'Hosting', icon: <PublicIcon /> },
+      // { id: 'Functions', icon: <SettingsEthernetIcon /> },
+      // { id: 'ML Kit', icon: <SettingsInputComponentIcon /> },
     ],
   },
   {
-    id: 'Quality',
+    id: 'Filters',
     children: [
-      { id: 'Analytics', icon: <SettingsIcon /> },
-      { id: 'Performance', icon: <TimerIcon /> },
-      { id: 'Test Lab', icon: <PhonelinkSetupIcon /> },
+      // { id: 'Analytics', icon: <SettingsIcon /> },
+      // { id: 'Performance', icon: <TimerIcon /> },
+      // { id: 'Test Lab', icon: <PhonelinkSetupIcon /> },
     ],
   },
 ];
@@ -80,6 +80,14 @@ const styles = (theme) => ({
   divider: {
     marginTop: theme.spacing(2),
   },
+  logo:{
+    backgroundImage: 'url("/images/minerva.png")',
+    backgroundRepeat : 'no-repeat',
+    backgroundSize: 'contain',
+    width : '150px',
+    height: '100px',
+    margin: 'auto',
+  },
 });
 
 function Navigator(props) {
@@ -89,7 +97,7 @@ function Navigator(props) {
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
         <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>
-          Minerva
+          <div className={classes.logo}></div>
         </ListItem>
         <ListItem className={clsx(classes.item, classes.itemCategory)}>
           <ListItemIcon className={classes.itemIcon}>
@@ -100,7 +108,7 @@ function Navigator(props) {
               primary: classes.itemPrimary,
             }}
           >
-            Project Overview
+            Home
           </ListItemText>
         </ListItem>
         {categories.map(({ id, children }) => (
