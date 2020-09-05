@@ -4,6 +4,7 @@ cffi==1.14.1
 chardet==3.0.4
 cryptography==3.0
 decorator==4.4.2
+discord.py==1.4.1
 Django==3.0.8
 djangorestframework==3.11.1
 python-telegram-bot==12.8
