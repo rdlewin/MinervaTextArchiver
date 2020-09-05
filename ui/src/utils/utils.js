@@ -10,3 +10,28 @@ export function getInitials(userName){
         },'');
     }
 }
+
+
+export function getHierarchy (list){
+    const nodesMap = list.reduce((nodes, currentValue) => {
+        currentValue.children = [];
+        nodes[currentValue.id] = currentValue;
+        return nodes;
+    },{});
+
+
+    list.forEach(node => {
+       const parent = node.reply_to_id;
+       if (parent !== null) {
+           nodesMap[parent].children.push(node);
+       }
+    });
+
+    const rootElement = list.find(node =>{
+       if (!node.reply_to_id){
+           return node;
+       }
+    });
+
+    return rootElement;
+}

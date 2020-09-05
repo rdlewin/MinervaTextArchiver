@@ -9,6 +9,7 @@ import {red} from "@material-ui/core/colors";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 
+
 const styles = (theme) => ({
     root: {
         display: 'flex',
@@ -21,6 +22,8 @@ const styles = (theme) => ({
         backgroundColor: red[500],
     },
 });
+
+
 
 class MessageBox extends Component{
 
@@ -43,6 +46,7 @@ class MessageBox extends Component{
                     <Typography variant="body2" color="textSecondary" component="p">
                         {data.content}
                     </Typography>
+
                 </CardContent>
             </Card>
         )

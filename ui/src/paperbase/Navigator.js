@@ -9,6 +9,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
 import DnsRoundedIcon from '@material-ui/icons/DnsRounded';
 import PermMediaOutlinedIcon from '@material-ui/icons/PhotoSizeSelectActual';
@@ -18,25 +20,15 @@ import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponen
 import TimerIcon from '@material-ui/icons/Timer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
+import ApplicationsList from "../components/ApplicationsList";
 
 const categories = [
   {
-    id: 'Groups',
-    children: [
-      // { id: 'Authentication', icon: <PeopleIcon />, active: true },
-      // { id: 'Database', icon: <DnsRoundedIcon /> },
-      // { id: 'Storage', icon: <PermMediaOutlinedIcon /> },
-      // { id: 'Hosting', icon: <PublicIcon /> },
-      // { id: 'Functions', icon: <SettingsEthernetIcon /> },
-      // { id: 'ML Kit', icon: <SettingsInputComponentIcon /> },
-    ],
-  },
-  {
     id: 'Filters',
     children: [
-      // { id: 'Analytics', icon: <SettingsIcon /> },
-      // { id: 'Performance', icon: <TimerIcon /> },
-      // { id: 'Test Lab', icon: <PhonelinkSetupIcon /> },
+      { id: 'Date Range', icon: <DateRangeIcon /> },
+      { id: 'Filter', icon: <TimerIcon /> },
+      { id: 'Filter', icon: <PhonelinkSetupIcon /> },
     ],
   },
 ];
@@ -65,7 +57,10 @@ const styles = (theme) => ({
   },
   firebase: {
     fontSize: 24,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 -1px 0 #404854 inset',
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
   itemActiveItem: {
     color: '#4fc3f7',
@@ -76,6 +71,9 @@ const styles = (theme) => ({
   itemIcon: {
     minWidth: 'auto',
     marginRight: theme.spacing(2),
+  },
+  appIcon:{
+    color: theme.palette.common.white,
   },
   divider: {
     marginTop: theme.spacing(2),
@@ -96,7 +94,7 @@ function Navigator(props) {
   return (
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
-        <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>
+        <ListItem className={classes.firebase}>
           <div className={classes.logo}></div>
         </ListItem>
         <ListItem className={clsx(classes.item, classes.itemCategory)}>
@@ -111,6 +109,22 @@ function Navigator(props) {
             Home
           </ListItemText>
         </ListItem>
+        <ListItem className={classes.categoryHeader}>
+          <ListItemIcon className={clsx(classes.itemIcon,classes.appIcon)}>
+            <AppsIcon />
+          </ListItemIcon>
+          <ListItemText
+              classes={{
+                primary: classes.categoryHeaderPrimary,
+              }}
+          >
+            Applications
+          </ListItemText>
+        </ListItem>
+        <ApplicationsList />
+
+
+        <Divider className={classes.divider} />
         {categories.map(({ id, children }) => (
           <React.Fragment key={id}>
             <ListItem className={classes.categoryHeader}>
