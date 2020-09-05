@@ -51,12 +51,12 @@ class DiscussionSummaryView(APIView):
             latest_discussion_messages = latest_discussion_messages[:self.LATEST_MESSAGE_AMOUNT]
             last_updated = None
             if last_discussion_message:
-                last_updated = last_discussion_message.last_updated.isoformat()
+                last_updated = last_discussion_message.last_updated
 
             response.append(
                 DiscussionSummarySerializer({
                     "discussion_id": discussion.id,
-                    "hashtag": discussion.hashtag,
+                    "discussion_name": discussion.hashtag.content,
                     "group_id": discussion_chat_group.id,
                     "group_name": discussion_chat_group.name,
                     "message_count": message_count,
@@ -92,7 +92,7 @@ class DiscussionStatsView(APIView):
             response.append(
                 DiscussionStatsSerializer({
                     "id": discussion.id,
-                    "hashtag": discussion.hashtag,
+                    "hashtag": discussion.discussion_name,
                     "group_id": discussion_chat_group.id,
                     "group_name": discussion_chat_group.name,
                     "message_count": message_count,

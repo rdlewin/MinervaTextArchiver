@@ -62,7 +62,7 @@ class DiscussionMessageViewTest(ApiTestCase):
             'sender_id': self.message.sent_by.id,
             'sender_name': self.message.sent_by.name,
             'discussion_ids': [self.discussion.id],
-            'discussion_hashtags': [self.discussion.hashtag.content],
+            'discussion_hashtags': [self.discussion.discussion_name.content],
             'reply_to_id': None,
             'hashtags': [hashtag.content for hashtag in self.message.hashtags.all()],
         }]
@@ -86,21 +86,34 @@ class DiscussionSummaryViewTest(ApiTestCase):
         request_data = {
             'user_id': self.user.id,
             'filters': {},
-            'page_num': 1
+            'page_num': 1,
+            'page_size': 100
         }
         response = self.client.post(url,
                                     data=json.dumps(request_data),
                                     format='json')
         self.assertEquals(response.status_code, 200)
 
+        expected_message_details = {
+            'id': self.message.id,
+            'app_message_id': self.message.app_message_id,
+            'sent_date': self.message.sent_date.isoformat() + 'Z',
+            'last_updated': self.message.last_updated.isoformat() + 'Z',
+            'content': self.message.content,
+            'sender_id': self.message.sent_by.id,
+            'sender_name': self.message.sent_by.name,
+            'discussions': [{'id': discussion.id,
+                             'hashtag': discussion.hashtag.content} for discussion in self.message.discussions.all()],
+            'reply_to_id': self.message.reply_to_id,
+        }
         expected = [{
             'discussion_id': self.discussion.id,
-            'hashtag': self.discussion.hashtag.content,
+            'discussion_name': self.discussion.hashtag.content,
             'group_id': self.message.chat_group_id,
             'message_count': self.discussion.messages.count(),
-            'last_updated': self.message.last_updated,
-            'first_message': self.message,
-            'latest_messages': [self.message]
+            'last_updated': self.message.last_updated.isoformat() + 'Z',
+            'first_message': expected_message_details,
+            'latest_messages': [expected_message_details]
         }]
         response_content = response.json()
 

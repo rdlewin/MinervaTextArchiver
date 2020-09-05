@@ -15,8 +15,8 @@ class DiscussionIdSerializer(serializers.Serializer):
 class MessageSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     app_message_id = serializers.IntegerField()
-    sent_date = serializers.DateTimeField(format=None)
-    last_updated = serializers.DateTimeField(format=None)
+    sent_date = serializers.DateTimeField()
+    last_updated = serializers.DateTimeField()
     content = serializers.CharField()
     sender_id = serializers.IntegerField(source='sent_by.id')
     sender_name = serializers.CharField(source='sent_by.name')
@@ -32,7 +32,7 @@ class MessageSerializer(serializers.Serializer):
         reply_to_id = None
         for discussion in message.discussions.all():
             discussion_ids.append(discussion.id)
-            discussion_hashtags.append(discussion.hashtag.content)
+            discussion_hashtags.append(discussion.discussion_name.content)
         if message.reply_to:
             reply_to_id = message.reply_to.id
 
@@ -56,6 +56,7 @@ class MessageSerializer(serializers.Serializer):
 class DiscussionSummaryFilterSerializer(serializers.Serializer):
     group_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_null=True,
                                       allow_empty=True)
+    app_name = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     discussion_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_null=True,
                                            allow_empty=True)
     sender_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_null=True,
@@ -65,15 +66,36 @@ class DiscussionSummaryFilterSerializer(serializers.Serializer):
     freetext_search = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
+def is_valid_discussion_summary_order_by(order_list):
+    list_of_errors = []
+    for value in order_list:
+        if value not in DiscussionSummaryRequestSerializer.VALID_ORDER_BY_NAMES:
+            list_of_errors.append(value)
+    if list_of_errors:
+        raise serializers.ValidationError('Invalid values to order by: {} '.format(list_of_errors))
+
+    return order_list
+
+
 class DiscussionSummaryRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=False)
+    user_id = serializers.IntegerField(required=True)
     filters = DiscussionSummaryFilterSerializer(required=False)
-    page_num = serializers.IntegerField(required=False)
+    order_by = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True,
+                                     validators=[is_valid_discussion_summary_order_by])
+    page_num = serializers.IntegerField(required=True)
+    page_size = serializers.IntegerField(required=True)
+
+    VALID_ORDER_BY_NAMES = (
+        'last_updated',
+        'app_id',
+        'group_id',
+        'first_message_id',
+    )
 
 
 class DiscussionSummarySerializer(serializers.Serializer):
     discussion_id = serializers.IntegerField(required=True)
-    hashtag = serializers.CharField(required=True)
+    discussion_name = serializers.CharField(required=True)
     group_id = serializers.IntegerField(required=True)
     message_count = serializers.IntegerField(required=True)
     last_updated = serializers.DateTimeField(required=True)
