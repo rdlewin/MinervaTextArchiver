@@ -31,7 +31,7 @@ class DiscussionSummaryView(APIView):
     LATEST_MESSAGE_AMOUNT = 3
 
     def post(self, request):
-        request_serializer = DiscussionSummaryRequestSerializer(data=json.loads(request.data))
+        request_serializer = DiscussionSummaryRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,8 +61,9 @@ class DiscussionSummaryView(APIView):
                     "group_name": discussion_chat_group.name,
                     "message_count": message_count,
                     "last_updated": last_updated,
-                    "first_message": discussion.first_message,
-                    "latest_messages": latest_discussion_messages
+                    "first_message": MessageSerializer.from_message(discussion.first_message).data,
+                    "latest_messages": (MessageSerializer.from_message(message).data for message in
+                                        latest_discussion_messages)
                 })
             )
 
@@ -72,7 +73,7 @@ class DiscussionSummaryView(APIView):
 # TODO: implement filtering by group ID
 class DiscussionStatsView(APIView):
     def post(self, request):
-        request_serializer = DiscussionStatsRequestSerializer(data=request.POST)
+        request_serializer = DiscussionStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user_id = request_serializer.data.get('user_id')
@@ -100,12 +101,12 @@ class DiscussionStatsView(APIView):
                 })
             )
 
-        return JsonResponse([r.data for r in response], status=status.HTTP_200_OK)
+        return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
 
 
 class AppGroupStatsView(APIView):
     def post(self, request):
-        request_serializer = GroupStatsRequestSerializer(data=request.POST)
+        request_serializer = GroupStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user_id = request_serializer.data.get('user_id')
@@ -128,12 +129,12 @@ class AppGroupStatsView(APIView):
             else:
                 app_groups[group.application].append(group_stats)
 
-            response = []
-            for app, groups in app_groups.items():
-                response.append(AppGroupsSerializer({
-                    'app_id': app.id,
-                    'app_name': app.name,
-                    'groups': [group.data for group in groups]
-                }))
+        response = []
+        for app, groups in app_groups.items():
+            response.append(AppGroupsSerializer({
+                'app_id': app.id,
+                'app_name': app.name,
+                'groups': [group.data for group in groups]
+            }))
 
-            return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
+        return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
