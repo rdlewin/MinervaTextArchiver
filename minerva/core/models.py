@@ -53,6 +53,19 @@ class ChatGroup(models.Model):
     hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups')
 
 
+def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, user_email=None):
+    chat_group = ChatGroup.objects.get(application=chat_app, app_chat_id=chat_group_id)
+    app_user = AppUsers.objects.filter(user_app_id=user_app_id, app=chat_app)
+
+    if app_user:
+        user = app_user.user
+    else:
+        user = User.objects.create(name=user_name, phone_number=user_phone, email=user_email)
+        AppUsers.objects.create(app=chat_app, user=user, user_app_id=user_app_id)
+
+    chat_group.members.add(user)
+
+
 def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
                   message_date, reply_message_id=None, edit_date=None):
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
