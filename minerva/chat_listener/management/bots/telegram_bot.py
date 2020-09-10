@@ -3,7 +3,7 @@ import logging
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
 from minerva.chat_listener.management.bots.utils import log_message
-from minerva.core.models import ChatApp, store_message
+from minerva.core.models import ChatApp, store_message, add_user
 from minerva.core.signals import message_stored
 
 """
@@ -64,6 +64,15 @@ class TelegramBot(object):
             sender_name=app_message.from_user.name,
             message_date=app_message.date,
             reply_message_id=reply_message_id,
-            edit_date=app_message.date)
+            edit_date=app_message.date
+        )
+
+        for user in app_message.new_chat_members:
+            add_user(
+                chat_app=self.chat_app,
+                chat_group_id=app_message.chat.id,
+                user_app_id=user.id,
+                user_name=user.name
+            )
 
         message_stored.send(self.__class__, message=new_message)

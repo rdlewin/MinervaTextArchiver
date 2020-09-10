@@ -9,7 +9,7 @@ class DiscussionMessageRequestSerializer(serializers.Serializer):
 
 class DiscussionIdSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    hashtag = serializers.CharField(source='hashtag.content')
+    hashtag = serializers.CharField()
 
 
 class MessageSerializer(serializers.Serializer):
@@ -18,8 +18,8 @@ class MessageSerializer(serializers.Serializer):
     sent_date = serializers.DateTimeField()
     last_updated = serializers.DateTimeField()
     content = serializers.CharField()
-    sender_id = serializers.IntegerField(source='sent_by.id')
-    sender_name = serializers.CharField(source='sent_by.name')
+    sender_id = serializers.IntegerField()
+    sender_name = serializers.CharField()
     discussions = DiscussionIdSerializer(many=True)
     reply_to_id = serializers.IntegerField()
 
@@ -27,12 +27,12 @@ class MessageSerializer(serializers.Serializer):
 
     @classmethod
     def from_message(cls, message):
-        discussion_ids = []
-        discussion_hashtags = []
+        discussions = []
         reply_to_id = None
         for discussion in message.discussions.all():
-            discussion_ids.append(discussion.id)
-            discussion_hashtags.append(discussion.discussion_name.content)
+            discussions.append({'id': discussion.id,
+                                'hashtag': discussion.hashtag.content})
+
         if message.reply_to:
             reply_to_id = message.reply_to.id
 
@@ -46,11 +46,27 @@ class MessageSerializer(serializers.Serializer):
             'content': message.content,
             'sender_id': message.sent_by.id,
             'sender_name': message.sent_by.name,
-            'discussion_ids': discussion_ids,
-            'discussion_hashtags': discussion_hashtags,
+            'discussions': discussions,
             'reply_to_id': reply_to_id,
             'hashtags': hashtags
         })
+
+    # @property
+    # def data(self):
+    #     return {
+    #         'id': self.id,
+    #         'app_message_id': self.app_message_id,
+    #         'sent_date': self.sent_date,
+    #         'last_updated': self.last_updated,
+    #         'content': self.content,
+    #         'sender_id': self.sent_by.id,
+    #         'sender_name': self.sent_by.name,
+    #         'discussion_ids': self.discussion_ids,
+    #         'discussion_hashtags': self.discussion_hashtags,
+    #         'reply_to_id': self.reply_to_id,
+    #         # 'hashtags': self.hashtags
+    #
+    #     }
 
 
 class DiscussionSummaryFilterSerializer(serializers.Serializer):

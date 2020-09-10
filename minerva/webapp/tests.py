@@ -17,7 +17,7 @@ class ApiTestCase(TestCase):
         self.chat_app = ChatApp.objects.create(name="Telegram")
 
         self.user = User.objects.create(name='Alexander Hamilton')
-        self.group = ChatGroup.objects.create(app_chat_id=1,
+        self.group = ChatGroup.objects.create(app_chat_id=self.chat_app.id,
                                               name='MyShot',
                                               application=self.chat_app)
         self.group.members.add(self.user)
@@ -56,15 +56,19 @@ class DiscussionMessageViewTest(ApiTestCase):
         expected = [{
             'id': self.message.id,
             'app_message_id': self.message.app_message_id,
-            'sent_date': self.message.sent_date.isoformat(),
-            'last_updated': self.message.last_updated.isoformat(),
+            'sent_date': self.message.sent_date.isoformat() + 'Z',
+            'last_updated': self.message.last_updated.isoformat() + 'Z',
             'content': self.message.content,
             'sender_id': self.message.sent_by.id,
             'sender_name': self.message.sent_by.name,
-            'discussion_ids': [self.discussion.id],
-            'discussion_hashtags': [self.discussion.discussion_name.content],
+            'discussions': [
+                {
+                    'id': self.discussion.id,
+                    'hashtag': self.discussion.hashtag.content
+                }
+            ],
             'reply_to_id': None,
-            'hashtags': [hashtag.content for hashtag in self.message.hashtags.all()],
+            # 'hashtags': [hashtag.content for hashtag in self.message.hashtags.all()],
         }]
         response_content = response.json()
 

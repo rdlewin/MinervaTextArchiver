@@ -3,7 +3,7 @@ import logging
 import discord
 
 from minerva.chat_listener.management.bots.utils import log_message
-from minerva.core.models import ChatApp, store_message
+from minerva.core.models import ChatApp, store_message, add_user
 from minerva.core.signals import message_stored
 
 
@@ -39,3 +39,12 @@ class DiscordBot(discord.Client):
             edit_date=message.edited_at)
 
         message_stored.send(self.__class__, message=new_message)
+
+    async def on_member_join(self, member):
+        for channel in member.guild.channels:
+            add_user(
+                chat_app=self.chat_app,
+                chat_group_id=channel.id,
+                user_app_id=member.id,
+                user_name=member.name
+            )
