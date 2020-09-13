@@ -123,6 +123,12 @@ theme = {
         },
       },
     },
+    MuiTextField:{
+      root:{
+        color: 'rgba(255, 255, 255, 0.7)',
+        borderColor: 'rgba(255, 255, 255, 0.7)'
+      }
+    },
     MuiAvatar: {
       root: {
         width: 32,

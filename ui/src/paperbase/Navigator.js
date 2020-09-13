@@ -21,14 +21,17 @@ import TimerIcon from '@material-ui/icons/Timer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
 import ApplicationsList from "../components/ApplicationsList";
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import HashtagFilter from "../components/HashtagFilter";
+import TimeFiltersRadio from "../layout/TimeFiltersRadio";
 
 const categories = [
   {
     id: 'Filters',
     children: [
-      { id: 'Date Range', icon: <DateRangeIcon /> },
-      { id: 'Filter', icon: <TimerIcon /> },
-      { id: 'Filter', icon: <PhonelinkSetupIcon /> },
+        { id: 'HashTag', icon: <LocalOfferIcon />, childElement: <HashtagFilter/>},
+        { id: 'Date Range', icon: <DateRangeIcon /> ,childElement: <TimeFiltersRadio/>},
+      // { id: 'Filter', icon: <PhonelinkSetupIcon />,childElement: null },
     ],
   },
 ];
@@ -86,6 +89,14 @@ const styles = (theme) => ({
     height: '100px',
     margin: 'auto',
   },
+  inlineItem: {
+    display: 'inline-block',
+    paddingTop: 1,
+    paddingBottom: 1,
+    marginBottom : theme.spacing(2),
+    color: 'rgba(255, 255, 255, 0.7)',
+
+  },
 });
 
 function Navigator(props) {
@@ -97,18 +108,18 @@ function Navigator(props) {
         <ListItem className={classes.firebase}>
           <div className={classes.logo}></div>
         </ListItem>
-        <ListItem className={clsx(classes.item, classes.itemCategory)}>
-          <ListItemIcon className={classes.itemIcon}>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText
-            classes={{
-              primary: classes.itemPrimary,
-            }}
-          >
-            Home
-          </ListItemText>
-        </ListItem>
+        {/*<ListItem className={clsx(classes.item, classes.itemCategory)}>*/}
+        {/*  <ListItemIcon className={classes.itemIcon}>*/}
+        {/*    <HomeIcon />*/}
+        {/*  </ListItemIcon>*/}
+        {/*  <ListItemText*/}
+        {/*    classes={{*/}
+        {/*      primary: classes.itemPrimary,*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    Home*/}
+        {/*  </ListItemText>*/}
+        {/*</ListItem>*/}
         <ListItem className={classes.categoryHeader}>
           <ListItemIcon className={clsx(classes.itemIcon,classes.appIcon)}>
             <AppsIcon />
@@ -136,20 +147,23 @@ function Navigator(props) {
                 {id}
               </ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, active }) => (
+            {children.map(({ id: childId, icon, active, childElement }) => (
               <ListItem
                 key={childId}
-                button
-                className={clsx(classes.item, active && classes.itemActiveItem)}
+
+                className={clsx(classes.inlineItem)}
               >
-                <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
-                <ListItemText
-                  classes={{
-                    primary: classes.itemPrimary,
-                  }}
-                >
-                  {childId}
-                </ListItemText>
+                <div style={{display: 'flex'}} className={classes.item}>
+                  <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
+                  <ListItemText
+                    classes={{
+                      primary: classes.itemPrimary,
+                    }}
+                  >
+                    {childId}
+                  </ListItemText>
+                </div>
+                {childElement}
               </ListItem>
             ))}
 

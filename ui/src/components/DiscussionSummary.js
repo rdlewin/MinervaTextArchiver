@@ -18,10 +18,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from "clsx";
 import CommentsList from "./CommentsList";
 import Button from "@material-ui/core/Button";
-import {getInitials, getHierarchy} from "../utils/utils";
+import {getInitials, getHierarchy, stringToColour} from "../utils/utils";
 import Chip from "@material-ui/core/Chip";
 import axios from "../data/axios";
 import Skeleton from "@material-ui/lab/Skeleton";
+import Zoom from "@material-ui/core/Zoom";
+import Slide from "@material-ui/core/Slide";
 
 
 const styles = (theme) => ({
@@ -100,60 +102,60 @@ const styles = (theme) => ({
         const {classes,data,loading} = this.props;
         const {expanded, dataList} = this.state;
         return (
-            <Card className={classes.root}>
-                <CardHeader
-                    avatar={
-                        loading?(
-                            <Skeleton animation="wave" variant="circle" width={40} height={40} />
-                        ) : (
-
-                            <Avatar aria-label="Discussion" className={classes.avatar}>
-                                {getInitials(data.first_message.sender_name)}
-                            </Avatar>
-                        )
-                    }
-                    title={loading? (<Skeleton animation="wave" height={10} width="80%" style={{ marginBottom: 6 }}/>):
-                        (data.hashtag || 'General Discussion')}
-                    subheader={loading? (<Skeleton animation="wave" height={10} width="40%" style={{ marginBottom: 6 }}/>):
-                        (`${data.first_message.sender_name}, ${data.first_message.sent_date}`)}
-                />
-                <CardContent>
-                    {loading ? (
-                        <React.Fragment>
-
-                            <Skeleton animation="wave" height={150} width="80%" />
-                        </React.Fragment>
-                        ) : (
-                        <Typography variant="body2" color="textSecondary" component="p">
-                            {data.first_message.content}
-                        </Typography>
-                    )}
-                </CardContent>
-                <CardActions disableSpacing>
-                    {loading ? null :
-                        (<Button size="small" color="primary" onClick={this.onToggleComments}>
-                            {`${data.message_count} Messages`}
-                        </Button>
-                        )}
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent className={classes.content}>
-                        {!loading && data.message_count > 2 &&
-                            <Chip
-                            icon={<ChatOutlinedIcon />}
-                            label={`Show ${data.message_count - 2} More Comments`}
-                            clickable
-                            disabled={this.state.disabled}
-                            color="primary"
-                            onClick={this.onLoadComments}
-                            className={classes.moreComments}
-                            />
-                        }
-
-                        {loading? null : this.renderCommentsList()}
+            loading ? (
+                <Card className={classes.root}>
+                    <CardHeader
+                        avatar={<Skeleton animation="wave" variant="circle" width={40} height={40} />}
+                        title={<Skeleton animation="wave" height={10} width="80%" style={{ marginBottom: 6 }}/>}
+                        subheader={<Skeleton animation="wave" height={10} width="40%" style={{ marginBottom: 6 }}/>}
+                    />
+                    <CardContent>
+                        <Skeleton animation="wave" height={150} width="80%" />
                     </CardContent>
-                </Collapse>
-            </Card>
+                </Card>
+            ):(
+                    <Slide direction="left" mountOnEnter unmountOnExit in={!loading} timeout={2500}>
+                        <Card className={classes.root}>
+                            <CardHeader
+                                avatar={
+                                        <Avatar aria-label="Discussion" style={{backgroundColor: stringToColour(data.first_message.sender_name)}}>
+                                            {getInitials(data.first_message.sender_name)}
+                                        </Avatar>
+                                }
+                                title={data.hashtag || 'General Discussion'}
+                                subheader={`${data.first_message.sender_name}, ${data.first_message.sent_date}`}
+                            />
+                            <CardContent>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        {data.first_message.content}
+                                    </Typography>
+
+                            </CardContent>
+                            <CardActions disableSpacing>
+                                <Button size="small" color="primary" onClick={this.onToggleComments}>
+                                    {`${data.message_count} Messages`}
+                                </Button>
+                            </CardActions>
+                            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                <CardContent className={classes.content}>
+                                    {!loading && data.message_count > 2 &&
+                                    <Chip
+                                        icon={<ChatOutlinedIcon />}
+                                        label={`Show ${data.message_count - 2} More Comments`}
+                                        clickable
+                                        disabled={this.state.disabled}
+                                        color="primary"
+                                        onClick={this.onLoadComments}
+                                        className={classes.moreComments}
+                                    />
+                                    }
+
+                                    {loading? null : this.renderCommentsList()}
+                                </CardContent>
+                            </Collapse>
+                        </Card>
+                    </Slide>)
+
         );
     }
 
