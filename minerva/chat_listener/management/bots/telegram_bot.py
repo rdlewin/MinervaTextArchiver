@@ -76,5 +76,4 @@ class TelegramBot(object):
                 user_name=user.name
             )
 
-        # message_stored.send(self.__class__, message=new_message)
-        listeners.classify_message(self.__class__, message=new_message)
+        message_stored.send(self.__class__, message=new_message)
