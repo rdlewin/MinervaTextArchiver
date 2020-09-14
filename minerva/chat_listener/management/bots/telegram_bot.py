@@ -3,6 +3,7 @@ import logging
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
 from minerva.chat_listener.management.bots.utils import log_message
+from minerva.classifier import listeners
 from minerva.core.models import ChatApp, store_message, add_user
 from minerva.core.signals import message_stored
 
@@ -48,7 +49,7 @@ class TelegramBot(object):
         sender_id = app_message.from_user.id
         sender_name = app_message.from_user.full_name
 
-        log_message(app_message.content, sender_id, sender_name, self.chat_app.name)
+        log_message(app_message.text, sender_id, sender_name, self.chat_app.name)
 
         reply_message_id = None
         if app_message.reply_to_message:
@@ -75,4 +76,5 @@ class TelegramBot(object):
                 user_name=user.name
             )
 
-        message_stored.send(self.__class__, message=new_message)
+        # message_stored.send(self.__class__, message=new_message)
+        listeners.classify_message(self.__class__, message=new_message)

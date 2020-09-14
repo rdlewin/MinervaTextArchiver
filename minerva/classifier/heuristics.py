@@ -2,7 +2,7 @@ from abc import ABC
 from collections import namedtuple
 from typing import List
 
-from minerva.core.models import Discussion, Message
+from minerva.core.models import Discussion, Message, Hashtag
 
 ClassificationResult = namedtuple('ClassificationResult', ['discussion', 'confidence', 'is_new'])
 
@@ -40,7 +40,8 @@ class HashtagClassifier(AbstractClassifier):
                 discussion = related_discussions.filter(hashtag__content=hashtag)
                 classified_discussions.append(ClassificationResult(discussion, 1, False))
             else:
-                new_discussion = Discussion(message, hashtag)
+                new_hashtag, _ = Hashtag.objects.get_or_create(content=hashtag)
+                new_discussion = Discussion(first_message=message, hashtag=new_hashtag)
                 classified_discussions.append(ClassificationResult(new_discussion, 1, True))
 
         return classified_discussions
@@ -67,6 +68,6 @@ class ReplyClassifier(AbstractClassifier):
 
 
 CLASSIFIERS = (
-    HashtagClassifier,
-    ReplyClassifier,
+    HashtagClassifier(),
+    ReplyClassifier(),
 )
