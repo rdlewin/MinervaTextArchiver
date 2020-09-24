@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from minerva.core.models import Discussion, Message, ChatGroup
 from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
-    DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer
+    DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer, UserHashtagsRequestSerializer, \
+    UserHashtagsSerializer
 
 
 class DiscussionMessagesView(APIView):
@@ -136,3 +137,18 @@ class AppGroupStatsView(APIView):
             }))
 
         return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
+
+
+class UserHashtagsView(APIView):
+    def post(self, request):
+        request_serializer = UserHashtagsRequestSerializer(data=request.data)
+        if not request_serializer.is_valid():
+            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user_id = request_serializer.data.get('user_id')
+
+        hashtags = Message.objects.filter(chat_group__members__id=user_id).exclude(hashtags__isnull=True).values_list(
+            'hashtags__content', flat=True)
+
+        response = UserHashtagsSerializer({'hashtags': hashtags})
+
+        return JsonResponse(response.data, status=status.HTTP_200_OK, safe=False)

@@ -147,3 +147,11 @@ class AppGroupsSerializer(serializers.Serializer):
     app_id = serializers.IntegerField()
     app_name = serializers.CharField()
     groups = GroupStatsSerializer(many=True)
+
+
+class UserHashtagsRequestSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField(required=True)
+
+
+class UserHashtagsSerializer(serializers.Serializer):
+    hashtags = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
