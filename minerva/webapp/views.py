@@ -1,5 +1,3 @@
-import json
-
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -73,7 +71,7 @@ class DiscussionSummaryView(APIView):
 # TODO: implement filtering by group ID
 class DiscussionStatsView(APIView):
     def post(self, request):
-        request_serializer = DiscussionStatsRequestSerializer(data=json.loads(request.data))
+        request_serializer = DiscussionStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user_id = request_serializer.data.get('user_id')
@@ -106,7 +104,7 @@ class DiscussionStatsView(APIView):
 
 class AppGroupStatsView(APIView):
     def post(self, request):
-        request_serializer = GroupStatsRequestSerializer(data=json.loads(request.data))
+        request_serializer = GroupStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user_id = request_serializer.data.get('user_id')
