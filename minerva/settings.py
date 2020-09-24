@@ -123,6 +123,48 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} - {module} ({process:d}/{thread:d}): {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} - {module}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'server.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file']
+        },
+        'django.request': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file']
+        },
+        # 'django': {
+        #     'handlers': ['file', 'console'],
+        #     'propagate': False,
+        #     'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
+        # },
+    },
+}
+
 STATIC_URL = '/ui/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'ui/')
 
