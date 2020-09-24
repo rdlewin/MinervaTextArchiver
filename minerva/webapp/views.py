@@ -52,10 +52,14 @@ class DiscussionSummaryView(APIView):
             if last_discussion_message:
                 last_updated = last_discussion_message.last_updated
 
+            discussion_name = None
+            if discussion.hashtag:
+                discussion_name = discussion.hashtag.content
+
             response.append(
                 DiscussionSummarySerializer({
                     "discussion_id": discussion.id,
-                    "discussion_name": discussion.hashtag.content,
+                    "discussion_name": discussion_name,
                     "group_id": discussion_chat_group.id,
                     "group_name": discussion_chat_group.name,
                     "message_count": message_count,
@@ -82,7 +86,7 @@ class DiscussionStatsView(APIView):
         response = []
         for discussion in discussions:
             discussion_chat_group = discussion.first_message.chat_group
-            discussion_messages = Message.objects.filter(discussion=discussion)
+            discussion_messages = Message.objects.filter(discussions__exact=discussion)
             message_count = discussion_messages.count()
             last_discussion_message = discussion_messages.order_by('-last_updated').first()
             last_updated = None
@@ -92,7 +96,7 @@ class DiscussionStatsView(APIView):
             response.append(
                 DiscussionStatsSerializer({
                     "id": discussion.id,
-                    "hashtag": discussion.discussion_name,
+                    "hashtag": discussion.hashtag,
                     "group_id": discussion_chat_group.id,
                     "group_name": discussion_chat_group.name,
                     "message_count": message_count,

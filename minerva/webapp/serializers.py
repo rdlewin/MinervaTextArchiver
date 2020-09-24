@@ -30,8 +30,11 @@ class MessageSerializer(serializers.Serializer):
         discussions = []
         reply_to_id = None
         for discussion in message.discussions.all():
+            hashtag = None
+            if discussion.hashtag:
+                hashtag = discussion.hashtag.content
             discussions.append({'id': discussion.id,
-                                'hashtag': discussion.hashtag.content})
+                                'hashtag': hashtag})
 
         if message.reply_to:
             reply_to_id = message.reply_to.id
