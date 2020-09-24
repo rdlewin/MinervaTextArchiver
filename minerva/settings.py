@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'minerva.core',
     'minerva.chat_listener',
+    'minerva.classifier',
     'minerva.webapp',
 ]
 

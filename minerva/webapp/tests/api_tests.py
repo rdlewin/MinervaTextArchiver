@@ -49,7 +49,7 @@ class DiscussionMessageViewTest(ApiTestCase):
             'page_num': 1
         }
         response = self.client.post(url,
-                                    data=json.dumps(request_data),
+                                    data=request_data,
                                     format='json')
         self.assertEquals(response.status_code, 200)
 
@@ -94,7 +94,7 @@ class DiscussionSummaryViewTest(ApiTestCase):
             'page_size': 100
         }
         response = self.client.post(url,
-                                    data=json.dumps(request_data),
+                                    data=request_data,
                                     format='json')
         self.assertEquals(response.status_code, 200)
 
