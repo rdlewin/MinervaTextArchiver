@@ -24,6 +24,10 @@ import ApplicationsList from "../components/ApplicationsList";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import HashtagFilter from "../components/HashtagFilter";
 import TimeFiltersRadio from "../layout/TimeFiltersRadio";
+import {Button} from "@material-ui/core";
+import Store from "../store/Store";
+import {constants} from "../utils/constants";
+import {observer} from 'mobx-react';
 
 const categories = [
   {
@@ -66,7 +70,7 @@ const styles = (theme) => ({
     paddingBottom: theme.spacing(2),
   },
   itemActiveItem: {
-    color: '#4fc3f7',
+    backgroundColor: '#9370db',
   },
   itemPrimary: {
     fontSize: 'inherit',
@@ -99,7 +103,7 @@ const styles = (theme) => ({
   },
 });
 
-function Navigator(props) {
+function Navigator (props) {
   const { classes, ...other } = props;
 
   return (
@@ -132,6 +136,7 @@ function Navigator(props) {
             Applications
           </ListItemText>
         </ListItem>
+
         <ApplicationsList />
 
 

@@ -10,7 +10,12 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import AppBar from "@material-ui/core/AppBar";
 import withStyles from "@material-ui/core/styles/withStyles";
 import axios from '../data/axios';
+import {autorun} from "mobx";
 import Skeleton from "@material-ui/lab/Skeleton";
+import Store from "../store/Store";
+import {DelayInput} from "react-delay-input";
+import {constants} from "../utils/constants";
+
 
 
 const styles = (theme) => ({
@@ -29,38 +34,66 @@ const styles = (theme) => ({
 });
 
 
+function DelayInputCustom(props) {
+    const {  onChange, ...other } = props;
+
+    return (
+        <DelayInput
+            {...other}
+            onChange={(values) => {
+                onChange({
+                    target: {
+                        value: values.target.value,
+                    },
+                });
+            }}
+            minLength={3}
+            delayTimeout={600}
+
+        />
+    );
+}
+
+
 
 class DiscussionScreen extends Component{
     state = {
         dataList : [],
-        loading : true
+        loading : true,
+
     }
 
 
+    onSearchChanged = (event) =>{
+        console.log(event.target.value);
+        Store.setFilter({[constants.filterFreeText]:event.target.value});
+    }
 
     onReload = () => {
-        this.setState({loading:true});
-        this.getDiscussions().then(data=>{
-            this.setState({
-                dataList : data,
-                loading:false
-            })});
+        this.getDiscussions(Store.filters);
     }
 
     componentDidMount() {
+        this.disposer = autorun(()=>{
+            this.getDiscussions(Store.filters);
+        })
         //calling endpoint
-        this.getDiscussions().then(data=>{
-            this.setState({
-                dataList : data,
-                loading:false
-            })});
+
 
     }
 
-   async getDiscussions() {
-        const response = await axios.get('/discussions');
-        return response.data;
+    componentWillUnmount() {
+        this.disposer();
+    }
 
+    async getDiscussions(filter={}) {
+        this.setState({loading:true});
+        const response = await axios.get('/discussions');
+        this.setState({
+            dataList: response.data,
+            loading: false,
+        });
+        Store.setLastUpdate(Date.now());
     }
 
     renderAppbar () {
@@ -75,10 +108,12 @@ class DiscussionScreen extends Component{
                         <Grid item xs>
                             <TextField
                                 fullWidth
-                                placeholder="Search Author, #Hashtag, Message contents"
+                                placeholder="Search Message contents"
+                                onChange={this.onSearchChanged}
                                 InputProps={{
                                     disableUnderline: true,
                                     className: classes.searchInput,
+                                    inputComponent: DelayInputCustom,
                                 }}
                             />
                         </Grid>
@@ -96,10 +131,10 @@ class DiscussionScreen extends Component{
     }
 
     renderDiscussionList(){
-        const {dataList,loading} = this.state;
+        const {dataList,loading, lastUpdate} = this.state;
         return (dataList.length > 0 || !loading)?
             dataList.map(data=>{
-                return <DiscussionSummary data={data} key={data.id} loading={loading} />
+                return <DiscussionSummary key={data.discussion_id} data={data}  loading={loading} />
             }):
             <DiscussionSummary loading={loading}/>;
 

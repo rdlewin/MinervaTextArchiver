@@ -15,11 +15,17 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Grow from "@material-ui/core/Grow";
 import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
+import Store from "../store/Store";
+import {constants} from "../utils/constants";
 
 const styles = () => ({
     hide:{
         display: 'none'
-    }
+    },
+    root:{
+        color: 'rgba(255, 255, 255, 0.7)'
+    },
+
 })
 
 function RadioButtonsGroup(props) {
@@ -32,39 +38,80 @@ function RadioButtonsGroup(props) {
 
     const  {classes} =props;
 
-    const onDateFromChange = (date) => {
-        setSelectedFromDate(date);
+    const onDateFromChange = (dateFrom) => {
+        setSelectedFromDate(dateFrom);
+
+        Store.setFilter({
+            [constants.filterTimeFrom]: dateFrom,
+            [constants.filterTimeTo]: selectedToDate
+        });
     };
 
-    const onDateToChange = (date) => {
-        setSelectedToDate(date);
-        if (selectedFromDate > date){
-            setSelectedFromDate(date);
+    const onDateToChange = (dateTo) => {
+        setSelectedToDate(dateTo);
+        let dateFrom = selectedFromDate;
+        if (selectedFromDate > dateTo){
+            setSelectedFromDate(dateTo);
+            dateFrom = dateTo;
         }
+
+        Store.setFilter({
+            [constants.filterTimeFrom]: dateFrom,
+            [constants.filterTimeTo]: dateTo
+        });
     };
 
     const onChange = (event) => {
-        event.target.value === 'custom'?
+        let timeFrom = new Date();
+        let timeTo = new Date();
+        switch (event.target.value){
+            case constants.radioToday:
+                timeFrom = timeTo;
+                break;
+            case constants.radioLastWeek:
+                timeFrom.setDate(timeFrom.getDate() - 7);
+                break;
+            case constants.radioLastMonth:
+                timeFrom.setMonth(timeFrom.getMonth() - 1);
+                break;
+            case constants.radioCustom:
+                timeTo = selectedToDate;
+                timeFrom = selectedFromDate;
+                break;
+            default: //All
+                timeTo = null;
+                timeFrom = null;
+                break;
+        }
+        const timeFilter = {
+
+        }
+        Store.setFilter({
+            [constants.filterTimeFrom]: timeFrom,
+            [constants.filterTimeTo]: timeTo
+        });
+
+        event.target.value === constants.radioCustom?
             setDisabled(false):
             setDisabled(true);
     };
 
     return (
         <FormControl component="fieldset">
-            <RadioGroup aria-label="TimeFilter" name="timeFilter" defaultValue={"all"}  onChange={onChange}>
-                <FormControlLabel value="all" control={<Radio  color={"primary"} />} label="All" />
-                <FormControlLabel value="today" control={<Radio color={"primary"}/>} label="Today" />
-                <FormControlLabel value="lastWeek" control={<Radio color={"primary"}/>} label="Last Week" />
-                <FormControlLabel value="lastMonth"  control={<Radio color={"primary"}/>} label="Last Month" />
-                <FormControlLabel value="custom"  control={<Radio color={"primary"}/>} label="Custom Range" />
+            <RadioGroup aria-label="TimeFilter" name="timeFilter" defaultValue={constants.radioAll}  onChange={onChange}>
+                <FormControlLabel value={constants.radioAll} control={<Radio  color={"primary"} className={classes.root} />} label={constants.radioAll} />
+                <FormControlLabel value={constants.radioToday} control={<Radio color={"primary"} className={classes.root}/>} label={constants.radioToday} />
+                <FormControlLabel value={constants.radioLastWeek} control={<Radio color={"primary"} className={classes.root}/>} label={constants.radioLastWeek} />
+                <FormControlLabel value={constants.radioLastMonth}  control={<Radio color={"primary"} className={classes.root}/>} label={constants.radioLastMonth} />
+                <FormControlLabel value={constants.radioCustom}  control={<Radio color={"primary"} className={classes.root}/>} label={constants.radioCustom} />
             </RadioGroup>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Slide
                     direction="right"
                     mountOnEnter
-                    unmountOnExitZoom
+                    unmountOnExit
                     in={!disabled}
-                    timeout={2000}
+                    timeout={1000}
 
                 >
                     <Grid container justify="space-around"  >
@@ -77,7 +124,7 @@ function RadioButtonsGroup(props) {
                             maxDate={selectedToDate}
                             maxDateMessage={'From Date should be Before To Date'}
                             margin="normal"
-                            id="date-picker-inline"
+                            id="date-picker-From"
                             label="From Date:"
                             value={selectedFromDate}
                             onChange={onDateFromChange}
@@ -106,7 +153,7 @@ function RadioButtonsGroup(props) {
                             format="dd/MM/yyyy"
                             margin="normal"
                             maxDate={Date.now()}
-                            id="date-picker-inline"
+                            id="date-picker-To"
                             label="To Date:"
                             value={selectedToDate}
                             onChange={onDateToChange}
