@@ -35,7 +35,7 @@ class CoreModelTestCase(TestCase):
         self.assertEquals(new_message.hashtags.all().count(), 0)
 
     def test_store_message_existing_group_and_user(self):
-        sender = User.objects.create(name=self.sender_name)
+        sender = User.objects.create(username=self.sender_name)
         new_group = ChatGroup.objects.create(app_chat_id=1,
                                              name=self.group_name,
                                              application=self.chat_app)
@@ -51,7 +51,7 @@ class CoreModelTestCase(TestCase):
                                            message_id,
                                            message_content,
                                            sender.id,
-                                           sender.name,
+                                           sender.username,
                                            self.test_time)
 
         self.assertEquals(new_message.content, message_content)

@@ -31,7 +31,8 @@ class HashtagClassifierTest(ClassifierTestCase):
                                            message_content,
                                            sender_id,
                                            self.sender_name,
-                                           self.test_time)
+                                           self.test_time,
+                                           None)
 
         self.assertEquals(new_message.hashtags.all().count(), 0)
 
@@ -51,7 +52,8 @@ class HashtagClassifierTest(ClassifierTestCase):
                                            message_content,
                                            sender_id,
                                            self.sender_name,
-                                           self.test_time)
+                                           self.test_time,
+                                           None)
 
         self.assertEquals(new_message.hashtags.all().count(), 1)
 
@@ -61,7 +63,7 @@ class HashtagClassifierTest(ClassifierTestCase):
         expected_hashtag, is_new = Hashtag.objects.get_or_create('just_you_wait')
         self.assertFalse(is_new)
 
-        expected_discussion = Discussion(new_message, expected_hashtag)
+        expected_discussion = Discussion(first_message=new_message, hashtag=expected_hashtag)
 
         self.assertEquals(classifications, [heuristics.ClassificationResult(expected_discussion, 1, True)])
 
@@ -78,7 +80,8 @@ class HashtagClassifierTest(ClassifierTestCase):
                                            message_content,
                                            sender_id,
                                            self.sender_name,
-                                           self.test_time)
+                                           self.test_time,
+                                           None)
 
         self.assertEquals(new_message.hashtags.all().count(), 2)
 
@@ -87,11 +90,11 @@ class HashtagClassifierTest(ClassifierTestCase):
 
         expected_hashtag_1, is_new = Hashtag.objects.get_or_create(content='just_you_wait')
         self.assertFalse(is_new)
-        expected_discussion_1 = Discussion(new_message, expected_hashtag_1)
+        expected_discussion_1 = Discussion(first_message=new_message, hashtag=expected_hashtag_1)
 
         expected_hashtag_2, is_new = Hashtag.objects.get_or_create(content='MyShot')
         self.assertFalse(is_new)
-        expected_discussion_2 = Discussion(new_message, expected_hashtag_2)
+        expected_discussion_2 = Discussion(first_message=new_message, hashtag=expected_hashtag_2)
 
         self.assertEquals(classifications, [heuristics.ClassificationResult(expected_discussion_1, 1, True),
                                             heuristics.ClassificationResult(expected_discussion_2, 1, True)])
@@ -111,7 +114,8 @@ class ReplyClassifierTest(ClassifierTestCase):
                                            message_content,
                                            sender_id,
                                            self.sender_name,
-                                           self.test_time)
+                                           self.test_time,
+                                           None)
 
         self.assertEquals(new_message.reply_to, None)
         classifications = heuristics.ReplyClassifier().classify(new_message)
@@ -131,7 +135,8 @@ class ReplyClassifierTest(ClassifierTestCase):
                                               message_content,
                                               sender_id,
                                               self.sender_name,
-                                              self.test_time)
+                                              self.test_time,
+                                              None)
 
         new_message = models.store_message(self.chat_app,
                                            group_id,
@@ -141,6 +146,7 @@ class ReplyClassifierTest(ClassifierTestCase):
                                            sender_id,
                                            self.sender_name,
                                            self.test_time,
+                                           None,
                                            reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
@@ -162,7 +168,8 @@ class ReplyClassifierTest(ClassifierTestCase):
                                               message_content,
                                               sender_id,
                                               self.sender_name,
-                                              self.test_time)
+                                              self.test_time,
+                                              None)
 
         parent_discussion = Discussion.objects.create(first_message=parent_message, hashtag=None)
         parent_message.discussions.add(parent_discussion)
@@ -175,6 +182,7 @@ class ReplyClassifierTest(ClassifierTestCase):
                                            sender_id,
                                            self.sender_name,
                                            self.test_time,
+                                           None,
                                            reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
@@ -197,7 +205,8 @@ class ReplyClassifierTest(ClassifierTestCase):
                                               message_content,
                                               sender_id,
                                               self.sender_name,
-                                              self.test_time)
+                                              self.test_time,
+                                              None)
 
         parent_discussion_1 = Discussion.objects.create(first_message=parent_message, hashtag=None)
         parent_discussion_2 = Discussion.objects.create(first_message=parent_message, hashtag=None)
@@ -213,6 +222,7 @@ class ReplyClassifierTest(ClassifierTestCase):
                                            sender_id,
                                            self.sender_name,
                                            self.test_time,
+                                           None,
                                            reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
@@ -227,5 +237,3 @@ class ReplyClassifierTest(ClassifierTestCase):
     # reply to a message with 1 discussion
     # reply to a message with multiple discussions
     # reply to a message with X discussions + the reply includes a new hashtag -> creates a new discussion (?) - seems not relevant here
-
-    pass

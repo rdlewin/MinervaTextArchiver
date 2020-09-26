@@ -48,7 +48,7 @@ class MessageSerializer(serializers.Serializer):
             'last_updated': message.last_updated,
             'content': message.content,
             'sender_id': message.sent_by.id,
-            'sender_name': message.sent_by.name,
+            'sender_name': message.sent_by.username,
             'discussions': discussions,
             'reply_to_id': reply_to_id,
             'hashtags': hashtags

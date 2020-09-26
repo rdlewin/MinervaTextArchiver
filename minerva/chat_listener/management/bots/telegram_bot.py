@@ -64,6 +64,8 @@ class TelegramBot(object):
             sender_id=app_message.from_user.id,
             sender_name=app_message.from_user.name,
             message_date=app_message.date,
+            sender_obj=app_message.from_user,
+            new_user_callback=self.send_welcome_message,
             reply_message_id=reply_message_id,
             edit_date=app_message.date
         )
@@ -77,3 +79,6 @@ class TelegramBot(object):
             )
 
         message_stored.send(self.__class__, message=new_message)
+
+    def send_welcome_message(self, user: TelegramUser):
+        user.send_message()

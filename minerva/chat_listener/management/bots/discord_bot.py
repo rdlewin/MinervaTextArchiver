@@ -37,7 +37,10 @@ class DiscordBot(discord.Client):
             sender_id=sender_id,
             sender_name=sender_name,
             message_date=message.created_at,
-            edit_date=message.edited_at)
+            sender_obj=message.author,
+            new_user_callback=self.send_welcome_message,
+            edit_date=message.edited_at,
+            sender_email=message.author.email)
 
         message_stored.send(self.__class__, message=new_message)
 
@@ -50,3 +53,9 @@ class DiscordBot(discord.Client):
                 user_name=member.name
             )
             logging.info('Member %s joined channel %s' % (member.id, channel.id))
+
+    async def on_guild_join(self, guild: discord.Guild):
+        pass
+
+    async def send_welcome_message(self, user):
+        pass

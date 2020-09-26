@@ -16,7 +16,7 @@ class ApiTestCase(TestCase):
         self.client = APIClient()
         self.chat_app = ChatApp.objects.create(name="Telegram")
 
-        self.user = User.objects.create(name='Alexander Hamilton')
+        self.user = User.objects.create(username='Alexander Hamilton')
         self.group = ChatGroup.objects.create(app_chat_id=self.chat_app.id,
                                               name='MyShot',
                                               application=self.chat_app)
@@ -34,8 +34,9 @@ class ApiTestCase(TestCase):
                                             message_id,
                                             message_content,
                                             self.user.id,
-                                            self.user.name,
-                                            datetime.now())
+                                            self.user.username,
+                                            datetime.now(),
+                                            self.user)
         self.discussion = Discussion.objects.create(first_message=self.message, hashtag=self.hashtag)
         self.message.discussions.add(self.discussion)
 
@@ -60,7 +61,7 @@ class DiscussionMessageViewTest(ApiTestCase):
             'last_updated': message_factory.last_updated.isoformat() + 'Z',
             'content': message_factory.content,
             'sender_id': message_factory.sent_by.id,
-            'sender_name': message_factory.sent_by.name,
+            'sender_name': message_factory.sent_by.username,
             'discussions': [
                 {
                     'id': self.discussion.id,
@@ -105,7 +106,7 @@ class DiscussionSummaryViewTest(ApiTestCase):
             'last_updated': self.message.last_updated.isoformat() + 'Z',
             'content': self.message.content,
             'sender_id': self.message.sent_by.id,
-            'sender_name': self.message.sent_by.name,
+            'sender_name': self.message.sent_by.username,
             'discussions': [{'id': discussion.id,
                              'hashtag': discussion.hashtag.content} for discussion in self.message.discussions.all()],
             'reply_to_id': self.message.reply_to_id,
@@ -138,8 +139,9 @@ class GroupStatsViewTest(ApiTestCase):
                                            message_id,
                                            message_content,
                                            self.user.id,
-                                           self.user.name,
-                                           datetime.now(pytz.utc))
+                                           self.user.username,
+                                           datetime.now(pytz.utc),
+                                           self.user)
 
         url = reverse('app_group_stats')
         response = self.client.post(url,

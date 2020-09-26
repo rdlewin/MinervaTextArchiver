@@ -32,7 +32,6 @@ class Hashtag(models.Model):
 
 
 class User(AbstractUser):
-    name = models.TextField(null=True, blank=True)
     phone_number = models.TextField(null=True, blank=False)
 
 
@@ -68,7 +67,7 @@ def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, u
 
 
 def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
-                  message_date, sender_obj, new_user_callback, reply_message_id=None, edit_date=None,
+                  message_date, sender_obj, new_user_callback=None, reply_message_id=None, edit_date=None,
                   sender_email=None):
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
@@ -84,12 +83,13 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
         if not app_sender:
             temp_password = None
             new_user = User.objects.create_user(username=sender_name, email=sender_email, password=temp_password)
-            new_user_callback(sender_obj)
             app_sender = AppUsers.objects.create(
                 user=new_user,
                 app=chat_app,
                 user_app_id=sender_id
             )
+            if new_user_callback:
+                new_user_callback(sender_obj)
 
         reply_to = None
         if reply_message_id:
