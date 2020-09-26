@@ -13,13 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
 from django.urls import path
 
 from minerva.webapp.views import DiscussionStatsView, AppGroupStatsView, DiscussionMessagesView, DiscussionSummaryView, \
     UserHashtagsView
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('webapp/discussions/stats', DiscussionStatsView.as_view(), name='discussion_stats'),
     path('webapp/discussions/summary', DiscussionSummaryView.as_view(), name='discussion_summary'),
     path('webapp/messages', DiscussionMessagesView.as_view(), name='discussion_messages'),
