@@ -1,9 +1,10 @@
 import logging
 
 import discord
+from discord import User as DiscordUser
 
-from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log
-from minerva.core.models import ChatApp, store_message, add_user
+from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log, get_welcome_message
+from minerva.core.models import ChatApp, store_message, add_user, User as MinervaUser
 from minerva.core.signals import message_stored
 
 
@@ -42,7 +43,8 @@ class DiscordBot(discord.Client):
             edit_date=message.edited_at,
             sender_email=message.author.email)
 
-        message_stored.send(self.__class__, message=new_message)
+        if new_message:
+            message_stored.send(self.__class__, message=new_message)
 
     async def on_member_join(self, member):
         for channel in member.guild.channels:
@@ -57,5 +59,6 @@ class DiscordBot(discord.Client):
     async def on_guild_join(self, guild: discord.Guild):
         pass
 
-    async def send_welcome_message(self, user):
-        pass
+    def send_welcome_message(self, app_user: DiscordUser, minerva_user: MinervaUser):
+        content = get_welcome_message(minerva_user, self.chat_app.id, app_user.id)
+        app_user.send(content=content)

@@ -1,7 +1,7 @@
 import re
 import logging
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 
 
@@ -82,14 +82,20 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
         app_sender = AppUsers.objects.filter(app=chat_app, user_app_id=sender_id).first()
         if not app_sender:
             temp_password = None
-            new_user = User.objects.create_user(username=sender_name, email=sender_email, password=temp_password)
-            app_sender = AppUsers.objects.create(
-                user=new_user,
-                app=chat_app,
-                user_app_id=sender_id
-            )
-            if new_user_callback:
-                new_user_callback(sender_obj)
+            try:
+                with transaction.atomic():
+                    new_user = User.objects.create_user(username=sender_name, email=sender_email,
+                                                        password=temp_password)
+                    app_sender = AppUsers.objects.create(
+                        user=new_user,
+                        app=chat_app,
+                        user_app_id=sender_id
+                    )
+                    if new_user_callback:
+                        new_user_callback(sender_obj, new_user)
+            except Exception as e:
+                logging.error('Error occurred storing new User: %s', e)
+                return None
 
         reply_to = None
         if reply_message_id:

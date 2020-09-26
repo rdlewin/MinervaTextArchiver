@@ -159,3 +159,8 @@ class UserHashtagsRequestSerializer(serializers.Serializer):
 
 class UserHashtagsSerializer(serializers.Serializer):
     hashtags = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+
+
+class UserRegisterRequestSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True, allow_blank=False)
+    password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'})

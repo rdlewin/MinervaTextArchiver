@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from minerva.webapp.views import DiscussionStatsView, AppGroupStatsView, DiscussionMessagesView, DiscussionSummaryView, \
-    UserHashtagsView
+    UserHashtagsView, UserRegisterView, user_signup, UserAddAppView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +26,9 @@ urlpatterns = [
     path('webapp/discussions/summary', DiscussionSummaryView.as_view(), name='discussion_summary'),
     path('webapp/messages', DiscussionMessagesView.as_view(), name='discussion_messages'),
     path('webapp/apps/groups', AppGroupStatsView.as_view(), name='app_group_stats'),
-    path('webapp/hashtags', UserHashtagsView.as_view(), name='user_hashtags')
+    path('webapp/hashtags', UserHashtagsView.as_view(), name='user_hashtags'),
+
+    path('account/register', user_signup, name='user_signup'),
+    path('account/register/<user_uid>/<token>', UserRegisterView.as_view(), name='register_user'),
+    path('account/add_app/<user_uid>/<token>/<app_id>/<app_user_uid>', UserAddAppView.as_view(), name='add_user_app'),
 ]
