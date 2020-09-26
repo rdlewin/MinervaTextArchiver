@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class Message(models.Model):
@@ -29,10 +30,9 @@ class Hashtag(models.Model):
     content = models.TextField(null=False, blank=False, unique=True)
 
 
-class User(models.Model):
+class User(AbstractUser):
     name = models.TextField(null=True, blank=True)
     phone_number = models.TextField(null=True, blank=False)
-    email = models.TextField(null=True, blank=False)
 
 
 class ChatApp(models.Model):
@@ -67,7 +67,8 @@ def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, u
 
 
 def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
-                  message_date, reply_message_id=None, edit_date=None):
+                  message_date, sender_obj, new_user_callback, reply_message_id=None, edit_date=None,
+                  sender_email=None):
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
     if group_created:
@@ -79,7 +80,9 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
     if not new_message:
         app_sender = AppUsers.objects.filter(app=chat_app, user_app_id=sender_id).first()
         if not app_sender:
-            new_user = User.objects.create(name=sender_name)
+            temp_password = None
+            new_user = User.objects.create_user(username=sender_name, email=sender_email, password=temp_password)
+            new_user_callback(sender_obj)
             app_sender = AppUsers.objects.create(
                 user=new_user,
                 app=chat_app,

@@ -107,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+AUTH_USER_MODEL = 'core.User'
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -119,6 +121,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+SITE_URL = 'http://vmedu213.mtacloud.co.il'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
