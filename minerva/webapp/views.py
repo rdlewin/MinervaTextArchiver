@@ -1,3 +1,5 @@
+import logging
+
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,11 +11,17 @@ from minerva.webapp.serializers import DiscussionStatsRequestSerializer, Discuss
     UserHashtagsSerializer
 
 
+def non_valid_request_serializer(self, request_serializer):
+    logging.info('%s - request_serializer is not valid. Errors - %s' % (type(self).__name__,
+                                                                        request_serializer.errors))
+    return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class DiscussionMessagesView(APIView):
     def post(self, request):
         request_serializer = DiscussionMessageRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
-            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return non_valid_request_serializer(self, request_serializer)
         user_id = request_serializer.data.get('user_id')
         discussion_id = request_serializer.data.get('discussion_id')
         user_groups = ChatGroup.objects.filter(members__id=user_id)
@@ -32,7 +40,7 @@ class DiscussionSummaryView(APIView):
     def post(self, request):
         request_serializer = DiscussionSummaryRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
-            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return non_valid_request_serializer(self, request_serializer)
 
         user_id = request_serializer.data.get('user_id')
         filters = request_serializer.data.get('filters')
@@ -74,7 +82,7 @@ class DiscussionStatsView(APIView):
     def post(self, request):
         request_serializer = DiscussionStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
-            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return non_valid_request_serializer(self, request_serializer)
         user_id = request_serializer.data.get('user_id')
 
         discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
@@ -107,7 +115,7 @@ class AppGroupStatsView(APIView):
     def post(self, request):
         request_serializer = GroupStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
-            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return non_valid_request_serializer(self, request_serializer)
         user_id = request_serializer.data.get('user_id')
 
         groups = ChatGroup.objects.filter(members__id=user_id)
@@ -143,7 +151,7 @@ class UserHashtagsView(APIView):
     def post(self, request):
         request_serializer = UserHashtagsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
-            return JsonResponse(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return non_valid_request_serializer(self, request_serializer)
         user_id = request_serializer.data.get('user_id')
 
         hashtags = Message.objects.filter(chat_group__members__id=user_id).exclude(hashtags__isnull=True).values_list(

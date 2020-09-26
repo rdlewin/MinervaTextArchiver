@@ -9,3 +9,7 @@ def log_message(message, sender_id, sender_name, app_name):
         app=app_name
     )
     logging.info(log)
+
+
+def running_bot_with_token_log(self, app_name):
+    logging.info('%s bot started running. Token is: %s' % (app_name, self.token))
