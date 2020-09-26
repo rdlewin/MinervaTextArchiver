@@ -80,6 +80,7 @@ class DiscussionSummaryFilterSerializer(serializers.Serializer):
                                            allow_empty=True)
     sender_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_null=True,
                                        allow_empty=True)
+    hashtags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, allow_empty=True)
     min_date = serializers.DateTimeField(required=False, allow_null=True)
     max_date = serializers.DateTimeField(required=False, allow_null=True)
     freetext_search = serializers.CharField(required=False, allow_null=True, allow_blank=True)

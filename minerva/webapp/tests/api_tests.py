@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 
 from minerva.core import models
 from minerva.core.models import User, ChatGroup, ChatApp, Discussion, Hashtag
+from minerva.webapp.tests.stubs import message_factory
 
 
 class ApiTestCase(TestCase):
@@ -40,11 +41,11 @@ class ApiTestCase(TestCase):
 
 
 class DiscussionMessageViewTest(ApiTestCase):
-    def test(self):
+    def test(self, message_factory):
         url = reverse('discussion_messages')
         request_data = {
             'user_id': self.user.id,
-            'discussion_id': self.message.discussions.first().id,
+            'discussion_id': message_factory.discussions.first().id,
             'page_num': 1
         }
         response = self.client.post(url,
@@ -53,13 +54,13 @@ class DiscussionMessageViewTest(ApiTestCase):
         self.assertEquals(response.status_code, 200)
 
         expected = [{
-            'id': self.message.id,
-            'app_message_id': self.message.app_message_id,
-            'sent_date': self.message.sent_date.isoformat() + 'Z',
-            'last_updated': self.message.last_updated.isoformat() + 'Z',
-            'content': self.message.content,
-            'sender_id': self.message.sent_by.id,
-            'sender_name': self.message.sent_by.name,
+            'id': message_factory.id,
+            'app_message_id': message_factory.app_message_id,
+            'sent_date': message_factory.sent_date.isoformat() + 'Z',
+            'last_updated': message_factory.last_updated.isoformat() + 'Z',
+            'content': message_factory.content,
+            'sender_id': message_factory.sent_by.id,
+            'sender_name': message_factory.sent_by.name,
             'discussions': [
                 {
                     'id': self.discussion.id,

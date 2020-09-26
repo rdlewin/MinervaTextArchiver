@@ -26,6 +26,7 @@ class DiscussionMessagesView(APIView):
         return JsonResponse([r.data for r in responses], status=status.HTTP_200_OK, safe=False)
 
 
+# TODO: implement filters and pagination
 class DiscussionSummaryView(APIView):
     LATEST_MESSAGE_AMOUNT = 3
 
@@ -39,6 +40,20 @@ class DiscussionSummaryView(APIView):
         page_num = request_serializer.data.get('page_num')
 
         discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
+        if filters.get('group_ids'):
+            discussions = discussions.filter(messages__chat_group_id__in=filters.get('group_ids'))
+        if filters.get('app_name'):
+            discussions = discussions.filter(first_message__chat_group__application__name=filters.get('app_name'))
+        if filters.get('discussion_ids'):
+            discussions = discussions.filter(id__in=filters.get('discussion_ids'))
+        if filters.get('sender_ids'):
+            discussions = discussions.filter(messages__sent_by_id__in=filters.get('sender_ids'))
+        if filters.get('min_date'):
+            discussions = discussions.filter(first_message__sent_date__gte=filters.get('min_date'))
+        if filters.get('max_date'):
+            discussions = discussions.filter(messages__last_updated__lte=filters.get('max_date'))
+        # if filters.get('freetext_search'):
+        #     discussions = discussions.filter(messages__chat_group_id__in=filters.get('freetext_search'))
 
         response = []
         for discussion in discussions:
@@ -73,7 +88,6 @@ class DiscussionSummaryView(APIView):
         return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
 
 
-# TODO: implement filtering by group ID
 class DiscussionStatsView(APIView):
     def post(self, request):
         request_serializer = DiscussionStatsRequestSerializer(data=request.data)
