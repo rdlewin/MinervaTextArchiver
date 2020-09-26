@@ -164,6 +164,11 @@ LOGGING = {
             'propagate': False,
             'handlers': ['console', 'file']
         },
+        'telegram': {
+            'level': 'INFO',
+            'propagate': False,
+            'handlers': ['console', 'file']
+        },
         'django.request': {
             'level': 'DEBUG',
             'handlers': ['console', 'file']
