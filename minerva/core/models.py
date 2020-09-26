@@ -12,7 +12,7 @@ class Message(models.Model):
     content = models.TextField(null=False, blank=False)
     normalized_content = models.TextField(null=True, blank=False)
     chat_group = models.ForeignKey('ChatGroup', null=False, on_delete=models.CASCADE)
-    sent_by = models.ForeignKey('User', null=False, on_delete=models.DO_NOTHING)
+    sent_by = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
     reply_to = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='replies')
     discussions = models.ManyToManyField('Discussion', related_name='messages')
     hashtags = models.ManyToManyField('Hashtag')
