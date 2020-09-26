@@ -24,7 +24,9 @@ import axios from "../data/axios";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
-
+import Store from "../store/Store";
+import {observer} from "mobx-react";
+import { reaction} from "mobx";
 
 const styles = (theme) => ({
     root: {
@@ -46,7 +48,7 @@ const styles = (theme) => ({
     },
 });
 
-
+@observer
  class DiscussionSummary extends Component{
 
      state = {
@@ -65,15 +67,42 @@ const styles = (theme) => ({
          });
      };
 
+    componentDidMount() {
+        this.disposer = reaction(()=>Store.lastUpdate,
+            (lastUpdate)=>{
+            // console.log('reseting comments', lastUpdate);
+            this.setState({
+                expanded: false,
+                rootElement : null,
+                disabled : false,
+                commentsLoading : false,
+                commentsInitiated : false
+            });
 
-     onLoadComments = () => {
+        })
+        //calling endpoint
+
+
+    }
+
+    componentWillUnmount() {
+        this.disposer();
+    }
+
+    componentDidUpdate(prevProps){
+         if (prevProps.update !== this.props.update ){
+
+         }
+    }
+
+
+    onLoadComments = () => {
         this.setState({commentsLoading : true, commentsInitiated : true});
          this.getComments().then(data=>{
-
              this.setState({
-                 rootElement : getHierarchy(data),
                  disabled : true,
-                 commentsLoading : false
+                 commentsLoading : false,
+                 rootElement: getHierarchy(data)
              })});
 
 
@@ -100,7 +129,7 @@ const styles = (theme) => ({
 
     render() {
         const {classes,data,loading} = this.props;
-        const {expanded, dataList} = this.state;
+        const {expanded} = this.state;
         return (
             loading ? (
                 <Card className={classes.root}>
@@ -114,7 +143,7 @@ const styles = (theme) => ({
                     </CardContent>
                 </Card>
             ):(
-                    <Slide direction="left" mountOnEnter unmountOnExit in={!loading} timeout={2500}>
+                    <Slide direction="left" mountOnEnter unmountOnExit in={!loading} timeout={600}>
                         <Card className={classes.root}>
                             <CardHeader
                                 avatar={

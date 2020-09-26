@@ -6,18 +6,30 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from "../data/axios";
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import Store from "../store/Store";
+import {constants} from '../utils/constants';
+import Checkbox from "@material-ui/core/Checkbox";
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 const styles = (theme) => ({
     input: {
         borderColor: 'rgba(255, 255, 255, 0.7)',
-        '&::placeholder': {
+
+        '&::endAdornment': {
 
         },
     },
+
     formLabelRoot:{
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        paddingTop: '0.4em',
         "& .MuiInputBase-input":{ color: 'rgba(255, 255, 255, 0.7)'}
     },
 });
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 function HashtagFilter (props) {
     const [open, setOpen] = React.useState(false);
@@ -53,10 +65,21 @@ function HashtagFilter (props) {
         }
     }, [open]);
 
+    const onChange = (e,value)=>{
+        const hashtags = value.reduce((prev,current)=>{
+            return [...prev,current.hashtag];
+        },[]);
+        Store.setFilter({[constants.filterHashtag]:hashtags});
+    }
+
+
     return (
         <Autocomplete
-            id="asynchronous-demo"
-            style={{ width: '100%' }}
+            multiple
+            disableCloseOnSelect
+
+            id="hashtag-filter"
+            style={{ width: '100%',}}
             open={open}
             onOpen={() => {
                 setOpen(true);
@@ -68,13 +91,14 @@ function HashtagFilter (props) {
             getOptionLabel={(option) => option.hashtag}
             options={options}
             loading={loading}
-
+            onChange={onChange}
+            popoverProps={{ style: { width: 'auto'} }}
             renderInput={(params) => (
                 <TextField
                     {...params}
                     label="Search Hashtag"
                    className={classes.formLabelRoot}
-                    variant="outlined"
+                    variant="filled"
 
                     InputLabelProps={{
                         style: {
@@ -83,7 +107,7 @@ function HashtagFilter (props) {
                     }}
                     InputProps={{
                         ...params.InputProps,
-                        classes: { input: classes.input},
+                        classes: { input: classes.input, adornedEnd:classes.adornedEnd},
                         endAdornment: (
                             <React.Fragment>
                                 {loading ? <CircularProgress color="inherit" size={20} /> : null}
@@ -93,16 +117,22 @@ function HashtagFilter (props) {
                     }}
                 />
             )}
-            renderOption={(option, { inputValue }) => {
+            renderOption={(option, { inputValue,selected }) => {
                 const matches = match(option.hashtag, inputValue);
                 const parts = parse(option.hashtag, matches);
 
                 return (
                     <div>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
                         {parts.map((part, index) => (
-                            <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                {part.text}
-              </span>
+                                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                                    {part.text}
+                                </span>
                         ))}
                     </div>
                 );

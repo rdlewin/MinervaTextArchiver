@@ -13,6 +13,11 @@ import GroupItem from "./GroupItem";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Button} from "@material-ui/core";
 import axios from "../data/axios";
+import {observer} from "mobx-react";
+import Store from "../store/Store";
+import {constants} from "../utils/constants";
+import List from "@material-ui/core/List";
+
 
 const styles = (theme) => ({
     root: {
@@ -36,6 +41,9 @@ const styles = (theme) => ({
 
     icon:{
         color: 'rgba(255, 255, 255, 0.7)',
+    },
+    active:{
+        backgroundColor: '#009be5',
     },
     groups:{
         display: 'block',
@@ -65,7 +73,7 @@ const styles = (theme) => ({
 //         height: "100%",
 
 const ITEM_HEIGHT = 48;
-
+@observer
 class ApplicationsList extends Component {
     state = {
         dataList : [],
@@ -74,10 +82,8 @@ class ApplicationsList extends Component {
 
 
 
-    onAppClick = (event) => {
-        console.log("onAppClicked",event)
-        const {target} = event;
-        alert(`app clicked - ${target.innerText}`);
+    onAppClick = (event, appId) => {
+        Store.setFilter({[constants.filterApp]: appId, [constants.filterGroup]:[]});
         event.stopPropagation();
 
     };
@@ -89,12 +95,30 @@ class ApplicationsList extends Component {
         });
     };
 
-    onGroupClicked = (event) => {
+    onGroupClicked = (groupId,appId) => {
         this.setState({
             anchorEl : null,
             open : false
         });
-        console.log(`${event.currentTarget} was clicked`);
+
+        let newGroups = [];
+        if (Store.filters[constants.filterApp] === appId){
+
+            if (Store.filters[constants.filterGroup].find(item=>item === groupId)){
+                newGroups = Store.filters[constants.filterGroup].filter(item=> item !== groupId);
+            }
+            else{
+                newGroups = [...Store.filters[constants.filterGroup],groupId];
+
+            }
+
+        }
+        else if (groupId){
+            newGroups =  [groupId];
+        }
+
+
+        Store.setFilter({[constants.filterGroup]:newGroups,[constants.filterApp]:appId});
     };
 
     componentDidMount() {
@@ -114,38 +138,60 @@ class ApplicationsList extends Component {
     renderApplications() {
         const {classes} = this.props;
         const {dataList} = this.state;
+
         return (!dataList) ?
             null:
-            dataList.map(data=>{
-                const {groups} = data;
-                return (
-                    <div className={classes.root}>
-                        <Accordion className={classes.item}>
-                            <AccordionSummary
+                dataList.map(data=> {
+                    const {groups} = data;
+                    const activeApp = Store.filters[constants.filterApp] === data.app_id ?
+                        classes.active :
+                        null;
+                    return (
+                        <div key={data.app_id} className={classes.root}>
+                            <Accordion className={classes.item}>
+                                <AccordionSummary
+                                    className={activeApp}
+                                    expandIcon={<ExpandMoreIcon className={classes.icon}/>}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
+                                    <Button value={data.app_name}
+                                            onClick={(event) => this.onAppClick(event, data.app_id)}
+                                            className={clsx(classes.heading, classes.item,activeApp)}>{data.app_name}</Button>
+                                </AccordionSummary>
+                                <AccordionDetails className={classes.groups}>
+                                    {groups.map((group) => (
+                                        <GroupItem key={group.group_id} appId={data.app_id}
+                                                   onClick={this.onGroupClicked} group={group}/>
 
-                                expandIcon={<ExpandMoreIcon className={classes.icon}/>}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                            >
-                                <Button value={data.app_name} onClick={this.onAppClick} className={clsx(classes.heading,classes.item)}>{data.app_name}</Button>
-                            </AccordionSummary>
-                            <AccordionDetails className={classes.groups}>
-                                {groups.map((group) => (
-                                    <GroupItem key={group.group_name}  onClick={this.onGroupClicked} group={group}/>
+                                    ))}
 
-                                ))}
+                                </AccordionDetails>
+                            </Accordion>
 
-                            </AccordionDetails>
-                        </Accordion>
+                        </div>
 
-                    </div>
-
-                )
-            });
+                    )
+                });
     }
 
     render(){
-        return this.renderApplications();
+        const {classes} = this.props;
+        const noActiveApp = (!Store.filters[constants.filterGroup].length && !Store.filters[constants.filterApp]) ?
+            classes.active:
+            null;
+        return (
+            <Fragment>
+                <Button
+                    onClick={()=>this.onGroupClicked(null,null)}
+                    className={clsx(classes.heading,classes.item, noActiveApp)}
+                >
+                    Show All Applications
+                </Button>
+                {this.renderApplications()}
+            </Fragment>
+
+        );
     }
 }
 

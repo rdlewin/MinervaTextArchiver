@@ -1,4 +1,5 @@
 import re
+import logging
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -73,6 +74,7 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
                                                                 app_chat_id=chat_group_id)
     if group_created:
         chat_group.name = chat_group_name
+        logging.info('New group names "%s" created' % chat_group.name)
 
     new_message = Message.objects.filter(app_message_id=message_id,
                                          chat_group=chat_group).first()

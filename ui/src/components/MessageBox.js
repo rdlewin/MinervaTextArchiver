@@ -31,7 +31,7 @@ class MessageBox extends Component{
     render() {
         const {classes,data} = this.props;
         return(
-            <Grow in={true}  timeout={1500}>
+            <Grow in={true}  timeout={750}>
                 <Card className={classes.root}>
                     <CardHeader
                         avatar={

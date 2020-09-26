@@ -2,7 +2,7 @@ import logging
 
 from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 
-from minerva.chat_listener.management.bots.utils import log_message
+from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log
 from minerva.classifier import listeners
 from minerva.core.models import ChatApp, store_message, add_user
 from minerva.core.signals import message_stored
@@ -38,7 +38,7 @@ class TelegramBot(object):
         message_handler = MessageHandler(Filters.text & (~Filters.command), self.on_message)
         dispatcher.add_handler(message_handler)
 
-        logging.info('Bot started')
+        running_bot_with_token_log(self, type(self).__name__)
         updater.start_polling()
 
     def start(self, update, context):

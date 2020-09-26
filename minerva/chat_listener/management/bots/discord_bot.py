@@ -2,7 +2,7 @@ import logging
 
 import discord
 
-from minerva.chat_listener.management.bots.utils import log_message
+from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log
 from minerva.core.models import ChatApp, store_message, add_user
 from minerva.core.signals import message_stored
 
@@ -17,6 +17,7 @@ class DiscordBot(discord.Client):
 
     def run_bot(self):
         self.run(self.token)
+        running_bot_with_token_log(self, type(self).__name__)
 
     async def on_message(self, message: discord.Message):
         logging.info('Message received on Discord bot: %s' % message.content)
@@ -48,3 +49,4 @@ class DiscordBot(discord.Client):
                 user_app_id=member.id,
                 user_name=member.name
             )
+            logging.info('Member %s joined channel %s' % (member.id, channel.id))
