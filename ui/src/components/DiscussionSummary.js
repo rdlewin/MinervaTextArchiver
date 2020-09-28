@@ -16,6 +16,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from "clsx";
+import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOff';
 import CommentsList from "./CommentsList";
 import Button from "@material-ui/core/Button";
 import {getInitials, getHierarchy, stringToColour} from "../utils/utils";
@@ -26,12 +27,18 @@ import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
 import Store from "../store/Store";
 import {observer} from "mobx-react";
-import { reaction} from "mobx";
+import {reaction, toJS} from "mobx";
+import {constants} from "../utils/constants";
 
 const styles = (theme) => ({
     root: {
         // maxWidth: 345,
         marginBottom : '25px'
+    },
+    errorHeader:{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     media: {
         height: 0,
@@ -108,7 +115,14 @@ const styles = (theme) => ({
 
      }
      async getComments() {
-         const response = await axios.get('/messages');
+         // const response = await axios.get('/messages');
+         const postObj = {
+             user_id: Store.user[constants.userID],
+             discussion_id: this.props.data.discussion_id,
+             page_num: 0,
+
+         };
+         const response = await axios.post('discussions/stats');
          return response.data;
 
      }
@@ -127,6 +141,72 @@ const styles = (theme) => ({
 
      }
 
+     renderDiscussions(){
+         const {classes,data,loading} = this.props;
+         const {expanded} = this.state;
+
+         return (
+             data.discussion_id !== 'error' ?
+                 (
+                     <Slide direction="left" mountOnEnter unmountOnExit in={!loading} timeout={600}>
+                         <Card className={classes.root}>
+                             <CardHeader
+                                 avatar={
+                                     <Avatar aria-label="Discussion" style={{backgroundColor: stringToColour(data.first_message.sender_name)}}>
+                                         {getInitials(data.first_message.sender_name)}
+                                     </Avatar>
+                                 }
+                                 title={data.hashtag || 'General Discussion'}
+                                 subheader={`${data.first_message.sender_name}, ${data.first_message.sent_date}`}
+                             />
+                             <CardContent>
+                                 <Typography variant="body2" color="textSecondary" component="p">
+                                     {data.first_message.content}
+                                 </Typography>
+
+                             </CardContent>
+                             <CardActions disableSpacing>
+                                 <Button size="small" color="primary" onClick={this.onToggleComments}>
+                                     {`${data.message_count} Messages`}
+                                 </Button>
+                             </CardActions>
+                             <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                 <CardContent className={classes.content}>
+                                     {!loading && data.message_count > 2 &&
+                                     <Chip
+                                         icon={<ChatOutlinedIcon />}
+                                         label={`Show ${data.message_count - 2} More Comments`}
+                                         clickable
+                                         disabled={this.state.disabled}
+                                         color="primary"
+                                         onClick={this.onLoadComments}
+                                         className={classes.moreComments}
+                                     />
+                                     }
+
+                                     {loading? null : this.renderCommentsList()}
+                                 </CardContent>
+                             </Collapse>
+                         </Card>
+                     </Slide>
+                 ):
+                 (
+                     <Card className={clsx(classes.root,classes.errorHeader)}>
+                         <CardHeader
+                           className={classes.errorHeader}
+                             avatar={
+                                 <SpeakerNotesOffIcon/>
+                             }
+                             title={'No Discussions Found!'}
+                             subheader={`Try again later`}
+                         />
+
+                     </Card>
+                 )
+
+         );
+     }
+
     render() {
         const {classes,data,loading} = this.props;
         const {expanded} = this.state;
@@ -142,49 +222,8 @@ const styles = (theme) => ({
                         <Skeleton animation="wave" height={150} width="80%" />
                     </CardContent>
                 </Card>
-            ):(
-                    <Slide direction="left" mountOnEnter unmountOnExit in={!loading} timeout={600}>
-                        <Card className={classes.root}>
-                            <CardHeader
-                                avatar={
-                                        <Avatar aria-label="Discussion" style={{backgroundColor: stringToColour(data.first_message.sender_name)}}>
-                                            {getInitials(data.first_message.sender_name)}
-                                        </Avatar>
-                                }
-                                title={data.hashtag || 'General Discussion'}
-                                subheader={`${data.first_message.sender_name}, ${data.first_message.sent_date}`}
-                            />
-                            <CardContent>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {data.first_message.content}
-                                    </Typography>
-
-                            </CardContent>
-                            <CardActions disableSpacing>
-                                <Button size="small" color="primary" onClick={this.onToggleComments}>
-                                    {`${data.message_count} Messages`}
-                                </Button>
-                            </CardActions>
-                            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                                <CardContent className={classes.content}>
-                                    {!loading && data.message_count > 2 &&
-                                    <Chip
-                                        icon={<ChatOutlinedIcon />}
-                                        label={`Show ${data.message_count - 2} More Comments`}
-                                        clickable
-                                        disabled={this.state.disabled}
-                                        color="primary"
-                                        onClick={this.onLoadComments}
-                                        className={classes.moreComments}
-                                    />
-                                    }
-
-                                    {loading? null : this.renderCommentsList()}
-                                </CardContent>
-                            </Collapse>
-                        </Card>
-                    </Slide>)
-
+            ):
+                this.renderDiscussions()
         );
     }
 

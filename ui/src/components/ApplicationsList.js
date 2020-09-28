@@ -17,6 +17,7 @@ import {observer} from "mobx-react";
 import Store from "../store/Store";
 import {constants} from "../utils/constants";
 import List from "@material-ui/core/List";
+import Box from "@material-ui/core/Box";
 
 
 const styles = (theme) => ({
@@ -44,6 +45,13 @@ const styles = (theme) => ({
     },
     active:{
         backgroundColor: '#009be5',
+    },
+    errorHeader:{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'red',
+
     },
     groups:{
         display: 'block',
@@ -77,6 +85,7 @@ const ITEM_HEIGHT = 48;
 class ApplicationsList extends Component {
     state = {
         dataList : [],
+        errorMessage : '',
 
     };
 
@@ -121,58 +130,81 @@ class ApplicationsList extends Component {
         Store.setFilter({[constants.filterGroup]:newGroups,[constants.filterApp]:appId});
     };
 
+    onAllAppsClicked(){
+        Store.setFilter({[constants.filterGroup]:[],[constants.filterApp]:null});
+    }
+
     componentDidMount() {
        this.getApplicationsList().then(data=>{
+           console.log('applist:',data);
+           let error = '';
+           if (data.length === 0){
+               error = 'No Applications Returned!!';
+           }
            this.setState({
-            dataList : data
-           })});
+               dataList : data,
+               errorMessage : error,
+           })
+       });
     }
 
     async getApplicationsList(){
-       const response = await axios.get('apps');
-       return response.data;
+       // const response = await axios.get('apps');
+
+        const postObj = {
+            user_id: Store.user[constants.userID],
+        };
+        const response = await axios.post('apps/groups',postObj);
+        return response.data;
 
     }
 
 
     renderApplications() {
         const {classes} = this.props;
-        const {dataList} = this.state;
+        const {dataList,errorMessage} = this.state;
 
-        return (!dataList) ?
-            null:
-                dataList.map(data=> {
-                    const {groups} = data;
-                    const activeApp = Store.filters[constants.filterApp] === data.app_id ?
-                        classes.active :
-                        null;
-                    return (
-                        <div key={data.app_id} className={classes.root}>
-                            <Accordion className={classes.item}>
-                                <AccordionSummary
-                                    className={activeApp}
-                                    expandIcon={<ExpandMoreIcon className={classes.icon}/>}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                >
-                                    <Button value={data.app_name}
-                                            onClick={(event) => this.onAppClick(event, data.app_id)}
-                                            className={clsx(classes.heading, classes.item,activeApp)}>{data.app_name}</Button>
-                                </AccordionSummary>
-                                <AccordionDetails className={classes.groups}>
-                                    {groups.map((group) => (
-                                        <GroupItem key={group.group_id} appId={data.app_id}
-                                                   onClick={this.onGroupClicked} group={group}/>
+        const box = errorMessage?
+            (<Box className={classes.errorHeader}>
+                {errorMessage}
+            </Box>):
+            null;
 
-                                    ))}
+        return (dataList.length === 0) ?
+            box:
 
-                                </AccordionDetails>
-                            </Accordion>
+            dataList.map(data=> {
+                const {groups} = data;
+                const activeApp = Store.filters[constants.filterApp] === data.app_id ?
+                    classes.active :
+                    null;
+                return (
+                    <div key={data.app_id} className={classes.root}>
+                        <Accordion className={classes.item}>
+                            <AccordionSummary
+                                className={activeApp}
+                                expandIcon={<ExpandMoreIcon className={classes.icon}/>}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Button value={data.app_name}
+                                        onClick={(event) => this.onAppClick(event, data.app_id)}
+                                        className={clsx(classes.heading, classes.item,activeApp)}>{data.app_name}</Button>
+                            </AccordionSummary>
+                            <AccordionDetails className={classes.groups}>
+                                {groups.map((group) => (
+                                    <GroupItem key={group.id} appId={data.app_id}
+                                               onClick={this.onGroupClicked} group={group}/>
 
-                        </div>
+                                ))}
 
-                    )
-                });
+                            </AccordionDetails>
+                        </Accordion>
+
+                    </div>
+
+                )
+            });
     }
 
     render(){
@@ -183,7 +215,7 @@ class ApplicationsList extends Component {
         return (
             <Fragment>
                 <Button
-                    onClick={()=>this.onGroupClicked(null,null)}
+                    onClick={this.onAllAppsClicked}
                     className={clsx(classes.heading,classes.item, noActiveApp)}
                 >
                     Show All Applications

@@ -10,7 +10,7 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import AppBar from "@material-ui/core/AppBar";
 import withStyles from "@material-ui/core/styles/withStyles";
 import axios from '../data/axios';
-import {autorun} from "mobx";
+import {autorun, toJS} from "mobx";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Store from "../store/Store";
 import {DelayInput} from "react-delay-input";
@@ -88,12 +88,30 @@ class DiscussionScreen extends Component{
 
     async getDiscussions(filter={}) {
         this.setState({loading:true});
-        const response = await axios.get('/discussions');
-        this.setState({
-            dataList: response.data,
-            loading: false,
-        });
-        Store.setLastUpdate(Date.now());
+        //const response = await axios.get('/discussions');
+        const postObj = {
+            user_id: Store.user[constants.userID],
+            filters: toJS(Store.filters),
+            page_num: 0,
+            page_size: 100
+        };
+        console.log(postObj);
+        try {
+            const response = await axios.post('discussions/summary', postObj)
+            this.setState({
+                dataList: response.data,
+                loading: false,
+            });
+
+        } catch (e) {
+            this.setState({
+                dataList: [{discussion_id:'error'}],
+                loading: false,
+            });
+        }
+        finally {
+            Store.setLastUpdate(Date.now());
+        }
     }
 
     renderAppbar () {
@@ -136,7 +154,7 @@ class DiscussionScreen extends Component{
             dataList.map(data=>{
                 return <DiscussionSummary key={data.discussion_id} data={data}  loading={loading} />
             }):
-            <DiscussionSummary loading={loading}/>;
+            <DiscussionSummary loading={loading} />;
 
     }
 

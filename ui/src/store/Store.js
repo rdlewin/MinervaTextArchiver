@@ -1,4 +1,4 @@
-import {observable, action, toJS} from 'mobx';
+import {observable, action, toJS, computed} from 'mobx';
 import {constants} from "../utils/constants";
 
 class Store{
@@ -17,6 +17,21 @@ class Store{
     @action setLastUpdate(update){
         this.lastUpdate = update;
 
+    }
+
+    @observable user = {
+        [constants.userID]: 1,
+        [constants.userFirstName]: 'moshe',
+        [constants.userLastName]: 'zuchmer'
+    };
+
+    @action setUser(userAttrib){
+        this.user=Object.assign({},this.user, userAttrib);
+        console.log('user update:', toJS(this.user));
+    }
+
+    @computed get userFullName(){
+        return `${this.user[constants.userFirstName]} ${this.user[constants.userLastName]}`;
     }
     // @observable discussions = [];
     //

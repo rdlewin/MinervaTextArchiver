@@ -45,13 +45,13 @@ class GroupItem extends Component {
         return (
             <div key={group.group_id} className={activeGroup}>
 
-                    <Button className={activeGroup} onClick={()=>onClick(group.group_id,appId)} fullWidth={true}>
+                    <Button className={activeGroup} onClick={()=>onClick(group.id,appId)} fullWidth={true}>
 
-                            {group.group_name}
+                            {group.name || "Group"}
 
                     </Button>
 
-                <StyledBadge badgeContent={group.num_discussions} max={99} color="primary">
+                <StyledBadge badgeContent={group.num_discussions || '0'} max={99} color="primary">
                 </StyledBadge>
             </div>
         )
