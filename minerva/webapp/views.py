@@ -92,12 +92,11 @@ class DiscussionSummaryView(APIView):
             if last_discussion_message:
                 last_updated = last_discussion_message.last_updated
 
-            discussion_summaries.append(
             discussion_name = None
             if discussion.hashtag:
                 discussion_name = discussion.hashtag.content
 
-            response.append(
+            discussion_summaries.append(
                 DiscussionSummarySerializer({
                     "discussion_id": discussion.id,
                     "discussion_name": discussion_name,
