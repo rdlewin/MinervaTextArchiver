@@ -119,6 +119,12 @@ class DiscussionSummarySerializer(serializers.Serializer):
     latest_messages = MessageSerializer(many=True)
 
 
+class DiscussionSummaryListSerializer(serializers.Serializer):
+    discussions = serializers.ListField(child=DiscussionSummarySerializer(), required=True, allow_empty=True)
+    current_page = serializers.IntegerField(required=True)
+    total_pages = serializers.IntegerField(required=True)
+
+
 class DiscussionStatsRequestSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(required=True)
     group_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_empty=True)
