@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'minerva.webapp',
 
     'corsheaders',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +111,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+AUTH_USER_MODEL = 'core.User'
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -124,6 +127,8 @@ USE_L10N = True
 USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+SITE_URL = 'http://vmedu213.mtacloud.co.il'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -156,6 +161,12 @@ LOGGING = {
     'loggers': {
         '': {
             'level': 'DEBUG',
+            'propagate': False,
+            'handlers': ['console', 'file']
+        },
+        'telegram': {
+            'level': 'INFO',
+            'propagate': False,
             'handlers': ['console', 'file']
         },
         'django.request': {

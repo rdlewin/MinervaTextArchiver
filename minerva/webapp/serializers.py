@@ -30,8 +30,11 @@ class MessageSerializer(serializers.Serializer):
         discussions = []
         reply_to_id = None
         for discussion in message.discussions.all():
+            hashtag = None
+            if discussion.hashtag:
+                hashtag = discussion.hashtag.content
             discussions.append({'id': discussion.id,
-                                'hashtag': discussion.hashtag.content})
+                                'hashtag': hashtag})
 
         if message.reply_to:
             reply_to_id = message.reply_to.id
@@ -45,7 +48,7 @@ class MessageSerializer(serializers.Serializer):
             'last_updated': message.last_updated,
             'content': message.content,
             'sender_id': message.sent_by.id,
-            'sender_name': message.sent_by.name,
+            'sender_name': message.sent_by.username,
             'discussions': discussions,
             'reply_to_id': reply_to_id,
             'hashtags': hashtags
@@ -77,6 +80,7 @@ class DiscussionSummaryFilterSerializer(serializers.Serializer):
                                            allow_empty=True)
     sender_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_null=True,
                                        allow_empty=True)
+    hashtags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, allow_empty=True)
     min_date = serializers.DateTimeField(required=False, allow_null=True)
     max_date = serializers.DateTimeField(required=False, allow_null=True)
     freetext_search = serializers.CharField(required=False, allow_null=True, allow_blank=True)
@@ -161,3 +165,8 @@ class UserHashtagsRequestSerializer(serializers.Serializer):
 
 class UserHashtagsSerializer(serializers.Serializer):
     hashtags = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+
+
+class UserRegisterRequestSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True, allow_blank=False)
+    password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'})

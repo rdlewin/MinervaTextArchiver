@@ -48,7 +48,7 @@ class Command(BaseCommand):
             user_name = member.get('name')
             user_phone = member.get('phone')
             user_email = member.get('email')
-            user, _ = User.objects.get_or_create(name=user_name,
+            user, _ = User.objects.get_or_create(username=user_name,
                                                  phone_number=user_phone,
                                                  email=user_email)
 

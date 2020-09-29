@@ -45,12 +45,16 @@ function HashtagFilter (props) {
         }
 
         (async () => {
-            const response =  await axios.get('hashtags');
+            // const response =  await axios.get('hashtags');
 
+            const response =  await axios.post('hashtags',{user_id: Store.user[constants.userID]});
             const {data} = response;
-
+            console.log('hashtags-data: ' ,data);
             if (active) {
-                setOptions(data);
+                setOptions(data.hashtags);
+            }
+            if (data.hashtags.length === 0) {
+                setOpen(false);
             }
         })();
 
@@ -87,8 +91,8 @@ function HashtagFilter (props) {
             onClose={() => {
                 setOpen(false);
             }}
-            getOptionSelected={(option, value) => option.hashtag === value.hashtag}
-            getOptionLabel={(option) => option.hashtag}
+            getOptionSelected={(option, value) => option === value}
+            getOptionLabel={(option) => option}
             options={options}
             loading={loading}
             onChange={onChange}
@@ -118,8 +122,8 @@ function HashtagFilter (props) {
                 />
             )}
             renderOption={(option, { inputValue,selected }) => {
-                const matches = match(option.hashtag, inputValue);
-                const parts = parse(option.hashtag, matches);
+                const matches = match(option, inputValue);
+                const parts = parse(option, matches);
 
                 return (
                     <div>
