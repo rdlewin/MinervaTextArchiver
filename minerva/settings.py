@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "minerva.settings")
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -59,6 +61,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'minerva.urls'
+APPEND_SLASH = False
 
 TEMPLATES = [
     {
@@ -110,6 +113,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+}
 
 AUTH_USER_MODEL = 'core.User'
 
