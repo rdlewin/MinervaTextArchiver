@@ -38,6 +38,9 @@ class User(AbstractUser):
 class ChatApp(models.Model):
     name = models.TextField(null=False, blank=False)
 
+    def __str__(self):
+        return self.name
+
 
 class AppUsers(models.Model):
     user = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
