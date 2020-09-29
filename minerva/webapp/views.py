@@ -1,5 +1,6 @@
 import logging
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
@@ -54,6 +55,7 @@ class DiscussionSummaryView(APIView):
         filters = request_serializer.data.get('filters')
         page_num = request_serializer.data.get('page_num')
 
+        discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id).order_by('first_message_id')
         discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
         if filters.get('group_ids'):
             discussions = discussions.filter(messages__chat_group_id__in=filters.get('group_ids'))
@@ -70,8 +72,16 @@ class DiscussionSummaryView(APIView):
         # if filters.get('freetext_search'):
         #     discussions = discussions.filter(messages__chat_group_id__in=filters.get('freetext_search'))
 
-        response = []
-        for discussion in discussions:
+        paginator = Paginator(discussions, DiscussionSummaryRequestSerializer.page_size)
+        try:
+            current_page = paginator.page(page_num)
+        except PageNotAnInteger:
+            current_page = paginator.page(1)
+        except EmptyPage:
+            current_page = paginator.page(paginator.num_pages)
+
+        discussion_summaries = []
+        for discussion in current_page:
             discussion_chat_group = discussion.first_message.chat_group
             discussion_messages = Message.objects.filter(discussions__id=discussion.id)
             message_count = discussion_messages.count()
@@ -82,6 +92,7 @@ class DiscussionSummaryView(APIView):
             if last_discussion_message:
                 last_updated = last_discussion_message.last_updated
 
+            discussion_summaries.append(
             discussion_name = None
             if discussion.hashtag:
                 discussion_name = discussion.hashtag.content
@@ -100,7 +111,13 @@ class DiscussionSummaryView(APIView):
                 })
             )
 
-        return JsonResponse([r.data for r in response], status=status.HTTP_200_OK, safe=False)
+        response = DiscussionStatsRequestSerializer({
+            'discussions': [r.data for r in discussion_summaries],
+            'current_page': page_num,
+            'total_pages': paginator.num_pages,
+        })
+
+        return JsonResponse(response.data, status=status.HTTP_200_OK, safe=False)
 
 
 class DiscussionStatsView(APIView):
