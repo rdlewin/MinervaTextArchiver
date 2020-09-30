@@ -159,6 +159,13 @@ class AppGroupsSerializer(serializers.Serializer):
     groups = GroupStatsSerializer(many=True)
 
 
+class UserDetailsSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    id = serializers.IntegerField()
+    email = serializers.CharField()
+    phone = serializers.CharField(source='phone_number')
+
+
 class UserHashtagsRequestSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(required=True)
 

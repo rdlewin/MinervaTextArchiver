@@ -1,22 +1,24 @@
 import logging
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from minerva.core.models import Discussion, Message, ChatGroup, User, AppUsers
 from minerva.webapp.forms import UserSignUpForm
 from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
     DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer, UserHashtagsRequestSerializer, \
-    UserHashtagsSerializer, UserRegisterRequestSerializer, DiscussionSummaryListSerializer
+    UserHashtagsSerializer, UserRegisterRequestSerializer, DiscussionSummaryListSerializer, UserDetailsSerializer
 
 
 def non_valid_request_serializer(self, request_serializer):
@@ -259,6 +261,14 @@ class UserRegisterView(APIView):
             'id': user.id
         }
         return JsonResponse(response, status=status.HTTP_200_OK)
+
+
+class UserDetailsView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return JsonResponse(UserDetailsSerializer(request.user).data, status=status.HTTP_200_OK)
 
 
 class UserAddAppView(APIView):

@@ -201,7 +201,7 @@
 
 **URL:** /account/register/<user_uid>/<token>
 
-###6.1. Method: POST
+### 6.1. Method: POST
 
 **Request Data:** 
 ```json
@@ -211,7 +211,7 @@
 }
 ```
 
-###6.2. Method: GET
+### 6.2. Method: GET
 
 **Response Data:**
 ```json
@@ -274,3 +274,22 @@
 ```
 
 **Response:** HTTP 200
+
+
+## 10. Get User Data
+
+**URL:** /account/details
+
+**Method:** GET
+
+**Headers:** Authorization: Bearer <JWT>
+
+**Response Data:**
+```json
+{
+    "username": "lily",
+    "id": 7,
+    "email": "lily.f@mail.com",
+    "phone": "0501111111"
+}
+``` 
