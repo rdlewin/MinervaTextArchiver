@@ -199,7 +199,7 @@
 
 ## 6. Register User Created By Bot
 
-**URL:** /account/register/<user_uid>/<token>
+**URL:** /account/register/{user_uid}/{token}
 
 ### 6.1. Method: POST
 
@@ -227,7 +227,7 @@
 
 ## 7. Connect User To App
 
-**URL:** /account/add_app/<user_uid>/<token>/<app_id>/<app_user_uid>
+**URL:** /account/add_app/{user_uid}/{token}/{app_id}/{app_user_uid}
 
 **Method:** POST
 
