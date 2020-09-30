@@ -16,7 +16,7 @@ from minerva.webapp.forms import UserSignUpForm
 from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
     DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer, UserHashtagsRequestSerializer, \
-    UserHashtagsSerializer, UserRegisterRequestSerializer
+    UserHashtagsSerializer, UserRegisterRequestSerializer, DiscussionSummaryListSerializer
 
 
 def non_valid_request_serializer(self, request_serializer):
@@ -54,7 +54,7 @@ class DiscussionSummaryView(APIView):
         user_id = request_serializer.data.get('user_id')
         filters = request_serializer.data.get('filters', {})
         page_num = request_serializer.data.get('page_num')
-        page_size = request_serializer.data.get('page_size', 10)
+        page_size = request_serializer.data.get('page_size')
 
         discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id).order_by('first_message_id')
         if filters.get('group_ids'):
@@ -71,6 +71,7 @@ class DiscussionSummaryView(APIView):
             discussions = discussions.filter(messages__last_updated__lte=filters.get('max_date'))
         # if filters.get('freetext_search'):
         #     discussions = discussions.filter(messages__chat_group_id__in=filters.get('freetext_search'))
+        discussions = discussions.distinct()
 
         paginator = Paginator(discussions, page_size)
         try:
@@ -110,7 +111,7 @@ class DiscussionSummaryView(APIView):
                 })
             )
 
-        response = DiscussionStatsRequestSerializer({
+        response = DiscussionSummaryListSerializer({
             'discussions': [r.data for r in discussion_summaries],
             'current_page': page_num,
             'total_pages': paginator.num_pages,
