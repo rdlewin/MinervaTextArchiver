@@ -52,11 +52,11 @@ class DiscussionSummaryView(APIView):
             return non_valid_request_serializer(self, request_serializer)
 
         user_id = request_serializer.data.get('user_id')
-        filters = request_serializer.data.get('filters')
+        filters = request_serializer.data.get('filters', {})
         page_num = request_serializer.data.get('page_num')
+        page_size = request_serializer.data.get('page_size', 10)
 
         discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id).order_by('first_message_id')
-        discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
         if filters.get('group_ids'):
             discussions = discussions.filter(messages__chat_group_id__in=filters.get('group_ids'))
         if filters.get('app_name'):
@@ -72,7 +72,7 @@ class DiscussionSummaryView(APIView):
         # if filters.get('freetext_search'):
         #     discussions = discussions.filter(messages__chat_group_id__in=filters.get('freetext_search'))
 
-        paginator = Paginator(discussions, DiscussionSummaryRequestSerializer.page_size)
+        paginator = Paginator(discussions, page_size)
         try:
             current_page = paginator.page(page_num)
         except PageNotAnInteger:
