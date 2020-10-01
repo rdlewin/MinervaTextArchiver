@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
@@ -16,6 +16,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import Store from "../store/Store";
+import {getInitials, stringToColour} from "../utils/utils";
+import {constants} from "../utils/constants";
+import {autorun} from "mobx";
+import UserDetails from "../components/UserDetails";
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -44,44 +49,36 @@ const styles = (theme) => ({
 function Header(props) {
   const { classes, onDrawerToggle } = props;
 
+  useEffect(()=>autorun(()=>{
+    Store.validate();
+  }));
+
+  const userinfo = Store.signedIn ?
+     <UserDetails/>:
+      null;
+
   return (
     <React.Fragment>
       <AppBar color="primary" position="sticky" elevation={0}>
         <Toolbar></Toolbar>
-        {/*<Toolbar>*/}
-        {/*  <Grid container spacing={1} alignItems="center">*/}
-        {/*    <Hidden smUp>*/}
-        {/*      <Grid item>*/}
-        {/*        <IconButton*/}
-        {/*          color="inherit"*/}
-        {/*          aria-label="open drawer"*/}
-        {/*          onClick={onDrawerToggle}*/}
-        {/*          className={classes.menuButton}*/}
-        {/*        >*/}
-        {/*          <MenuIcon />*/}
-        {/*        </IconButton>*/}
-        {/*      </Grid>*/}
-        {/*    </Hidden>*/}
-        {/*    <Grid item xs />*/}
-        {/*    <Grid item>*/}
-        {/*      <Link className={classes.link} href="#" variant="body2">*/}
-        {/*        Go to docs*/}
-        {/*      </Link>*/}
-        {/*    </Grid>*/}
-        {/*    <Grid item>*/}
-        {/*      <Tooltip title="Alerts • No alerts">*/}
-        {/*        <IconButton color="inherit">*/}
-        {/*          <NotificationsIcon />*/}
-        {/*        </IconButton>*/}
-        {/*      </Tooltip>*/}
-        {/*    </Grid>*/}
-        {/*    <Grid item>*/}
-        {/*      <IconButton color="inherit" className={classes.iconButtonAvatar}>*/}
-        {/*        <Avatar src="/static/images/avatar/1.jpg" alt="My Avatar" />*/}
-        {/*      </IconButton>*/}
-        {/*    </Grid>*/}
-        {/*  </Grid>*/}
-        {/*</Toolbar>*/}
+        <Toolbar>
+          <Grid container spacing={1} alignItems="center">
+            <Hidden smUp>
+              <Grid item>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={onDrawerToggle}
+                  className={classes.menuButton}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Grid>
+            </Hidden>
+            {userinfo}
+          </Grid>
+        </Toolbar>
+        <Toolbar></Toolbar>
       </AppBar>
       {/*<AppBar*/}
       {/*  component="div"*/}

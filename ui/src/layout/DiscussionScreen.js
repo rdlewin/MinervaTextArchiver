@@ -97,9 +97,16 @@ class DiscussionScreen extends Component{
         };
         console.log(postObj);
         try {
-            const response = await axios.post('discussions/summary', postObj)
+            const response = await axios.post('discussions/summary', postObj,{
+                headers:{
+                    authorization: 'Bearer ' + Store.user[constants.userToken]
+                },
+            })
+            const discussions = (response.data.length > 0)?
+                response.data:
+                [{discussion_id:'error'}];
             this.setState({
-                dataList: response.data,
+                dataList: discussions,
                 loading: false,
             });
 

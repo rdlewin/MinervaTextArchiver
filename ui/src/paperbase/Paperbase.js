@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -8,19 +8,10 @@ import Link from '@material-ui/core/Link';
 import Navigator from './Navigator';
 import Content from './Content';
 import Header from './Header';
+import {Copyright} from "../utils/utils";
+import Store from '../store/Store';
+import {autorun} from 'mobx';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="#">
-        Minerva
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 let theme = createMuiTheme({
   palette: {
@@ -170,6 +161,8 @@ const styles = {
 function Paperbase(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

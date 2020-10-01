@@ -1,3 +1,8 @@
+import {format} from "date-fns";
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
+import React from "react";
+
 export function getInitials(userName){
     if (userName){
         return userName.split(' ').reduce((prev,curr,idx,arr)=>{
@@ -55,3 +60,23 @@ export function stringToColour (str) {
     return colors[hash];
 }
 
+export function formatDate(date) {
+    if (date){
+        return format(new Date(date), 'dd/MM/yyyy');
+    }
+    return '';
+
+}
+
+export function Copyright() {
+    return (
+        <Typography variant="body2" color="textSecondary" align="center">
+            {'Copyright © '}
+            <Link color="inherit" href="#">
+                Minerva
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
+    );
+}

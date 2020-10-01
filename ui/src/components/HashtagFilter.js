@@ -47,7 +47,11 @@ function HashtagFilter (props) {
         (async () => {
             // const response =  await axios.get('hashtags');
 
-            const response =  await axios.post('hashtags',{user_id: Store.user[constants.userID]});
+            const response =  await axios.post('hashtags',{user_id: Store.user[constants.userID]},{
+                headers:{
+                    authorization: 'Bearer ' + Store.user[constants.userToken]
+                },
+            });
             const {data} = response;
             console.log('hashtags-data: ' ,data);
             if (active) {

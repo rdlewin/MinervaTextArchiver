@@ -7,7 +7,7 @@ import Paperbase from "./paperbase/Paperbase";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Paperbase />
+    <App/>
   </React.StrictMode>,
   document.getElementById('root')
 );

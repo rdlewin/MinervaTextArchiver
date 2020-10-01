@@ -16,8 +16,8 @@ import axios from "../data/axios";
 import {observer} from "mobx-react";
 import Store from "../store/Store";
 import {constants} from "../utils/constants";
-import List from "@material-ui/core/List";
 import Box from "@material-ui/core/Box";
+import {autorun} from "mobx";
 
 
 const styles = (theme) => ({
@@ -135,17 +135,25 @@ class ApplicationsList extends Component {
     }
 
     componentDidMount() {
-       this.getApplicationsList().then(data=>{
-           console.log('applist:',data);
-           let error = '';
-           if (data.length === 0){
-               error = 'No Applications Returned!!';
-           }
-           this.setState({
-               dataList : data,
-               errorMessage : error,
-           })
-       });
+
+        this.disposer = autorun(()=>{
+            this.getApplicationsList().then(data=>{
+                console.log('applist:',data);
+                let error = '';
+                if (data.length === 0){
+                    error = 'No Applications Returned!!';
+                }
+                this.setState({
+                    dataList : data,
+                    errorMessage : error,
+                })
+            });
+        });
+
+    }
+
+    componentWillUnmount() {
+        this.disposer();
     }
 
     async getApplicationsList(){
@@ -154,7 +162,12 @@ class ApplicationsList extends Component {
         const postObj = {
             user_id: Store.user[constants.userID],
         };
-        const response = await axios.post('apps/groups',postObj);
+        console.log('applications did mount', postObj);
+        const response = await axios.post('apps/groups',postObj,{
+            headers:{
+                authorization: 'Bearer ' + Store.user[constants.userToken]
+            },
+        });
         return response.data;
 
     }

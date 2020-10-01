@@ -122,7 +122,11 @@ const styles = (theme) => ({
              page_num: 0,
 
          };
-         const response = await axios.post('discussions/stats');
+         const response = await axios.post('discussions/stats',postObj,{
+             headers:{
+                 authorization: 'Bearer ' + Store.user[constants.userToken]
+             },
+         });
          return response.data;
 
      }

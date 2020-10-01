@@ -1,26 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
+
 import './App.css';
+import SignInScreen from "./components/SignInScreen";
+
+import {BrowserRouter, Redirect} from "react-router-dom";
+import Paperbase from "./paperbase/Paperbase";
+import {Route, Switch} from "react-router";
+import RegisterScreen from "./components/RegisterScreen";
+import Store from './store/Store';
+import GuardedRoute from "./utils/GuardedRoute";
+import {useObserver} from "mobx-react-lite";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return useObserver(()=>(
+    <BrowserRouter>
+      <div >
+          <Switch>
+              {/*<GuardedRoute path='/' component={Paperbase} auth={Store.validate()} redirect='/signin'/>*/}
+              <Route path={'/'} exact  render={(props) => (
+                  Store.signedIn === true
+                      ? <Paperbase {...props} />
+                      : <Redirect to={{
+                          pathname: '/signin',
+                          state: { from: '/' }
+                      }} />
+              )}/>
+              <Route path={'/signin'} exact component={SignInScreen}/>
+              <Route path={'/register'} exact component={RegisterScreen}/>
+          </Switch>
+      </div>
+    </BrowserRouter>
+  ));
 }
 
 export default App;
