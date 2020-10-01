@@ -8,12 +8,12 @@ import Paperbase from "./paperbase/Paperbase";
 import {Route, Switch} from "react-router";
 import RegisterScreen from "./components/RegisterScreen";
 import Store from './store/Store';
-import GuardedRoute from "./utils/GuardedRoute";
-import {useObserver} from "mobx-react-lite";
+import {observer} from "mobx-react";
 
 
-function App() {
-  return useObserver(()=>(
+
+const App = observer(() => {
+  return (
     <BrowserRouter>
       <div >
           <Switch>
@@ -31,7 +31,7 @@ function App() {
           </Switch>
       </div>
     </BrowserRouter>
-  ));
-}
+  );
+})
 
 export default App;
