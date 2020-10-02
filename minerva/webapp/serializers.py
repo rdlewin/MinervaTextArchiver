@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 
 class DiscussionMessageRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
     discussion_id = serializers.IntegerField(required=True)
     page_num = serializers.IntegerField(required=True)
 
@@ -98,7 +97,6 @@ def is_valid_discussion_summary_order_by(order_list):
 
 
 class DiscussionSummaryRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
     filters = DiscussionSummaryFilterSerializer(required=False)
     order_by = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True,
                                      validators=[is_valid_discussion_summary_order_by])
@@ -130,7 +128,6 @@ class DiscussionSummaryListSerializer(serializers.Serializer):
 
 
 class DiscussionStatsRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
     group_ids = serializers.ListField(child=serializers.IntegerField(), required=False, allow_empty=True)
 
 
@@ -141,10 +138,6 @@ class DiscussionStatsSerializer(serializers.Serializer):
     group_name = serializers.CharField()
     message_count = serializers.IntegerField()
     last_updated = serializers.DateTimeField()
-
-
-class GroupStatsRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
 
 
 class GroupStatsSerializer(serializers.Serializer):
@@ -164,10 +157,6 @@ class UserDetailsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     email = serializers.CharField()
     phone = serializers.CharField(source='phone_number')
-
-
-class UserHashtagsRequestSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=True)
 
 
 class UserHashtagsSerializer(serializers.Serializer):

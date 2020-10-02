@@ -1,12 +1,9 @@
 import logging
 
-from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import redirect, render
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -14,10 +11,20 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from minerva.core.models import Discussion, Message, ChatGroup, User, AppUsers
-from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
-    GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
-    DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer, UserHashtagsRequestSerializer, \
-    UserHashtagsSerializer, UserRegisterRequestSerializer, DiscussionSummaryListSerializer, UserDetailsSerializer
+from minerva.webapp.serializers import (
+    AppGroupsSerializer,
+    DiscussionMessageRequestSerializer,
+    DiscussionStatsRequestSerializer,
+    DiscussionStatsSerializer,
+    DiscussionSummaryListSerializer,
+    DiscussionSummaryRequestSerializer,
+    DiscussionSummarySerializer,
+    GroupStatsSerializer,
+    MessageSerializer,
+    UserDetailsSerializer,
+    UserHashtagsSerializer,
+    UserRegisterRequestSerializer,
+)
 
 
 def non_valid_request_serializer(self, request_serializer):
@@ -27,13 +34,15 @@ def non_valid_request_serializer(self, request_serializer):
 
 
 class DiscussionMessagesView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         request_serializer = DiscussionMessageRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return non_valid_request_serializer(self, request_serializer)
-        user_id = request_serializer.data.get('user_id')
         discussion_id = request_serializer.data.get('discussion_id')
-        user_groups = ChatGroup.objects.filter(members__id=user_id)
+        user_groups = ChatGroup.objects.filter(members__id=request.user.id)
 
         messages = Message.objects.filter(chat_group__in=user_groups)
         messages = messages.filter(discussions__id=discussion_id)
@@ -43,8 +52,9 @@ class DiscussionMessagesView(APIView):
         return JsonResponse([r.data for r in responses], status=status.HTTP_200_OK, safe=False)
 
 
-# TODO: implement filters and pagination
 class DiscussionSummaryView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     LATEST_MESSAGE_AMOUNT = 3
 
     def post(self, request):
@@ -52,12 +62,12 @@ class DiscussionSummaryView(APIView):
         if not request_serializer.is_valid():
             return non_valid_request_serializer(self, request_serializer)
 
-        user_id = request_serializer.data.get('user_id')
         filters = request_serializer.data.get('filters', {})
         page_num = request_serializer.data.get('page_num')
         page_size = request_serializer.data.get('page_size')
 
-        discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id).order_by('first_message_id')
+        discussions = Discussion.objects.filter(messages__chat_group__members__id=request.user.id).order_by(
+            'first_message_id')
         if filters.get('group_ids'):
             discussions = discussions.filter(messages__chat_group_id__in=filters.get('group_ids'))
         if filters.get('app_name'):
@@ -122,13 +132,15 @@ class DiscussionSummaryView(APIView):
 
 
 class DiscussionStatsView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         request_serializer = DiscussionStatsRequestSerializer(data=request.data)
         if not request_serializer.is_valid():
             return non_valid_request_serializer(self, request_serializer)
-        user_id = request_serializer.data.get('user_id')
 
-        discussions = Discussion.objects.filter(messages__chat_group__members__id=user_id)
+        discussions = Discussion.objects.filter(messages__chat_group__members__id=request.user.id)
 
         response = []
         for discussion in discussions:
@@ -155,13 +167,11 @@ class DiscussionStatsView(APIView):
 
 
 class AppGroupStatsView(APIView):
-    def post(self, request):
-        request_serializer = GroupStatsRequestSerializer(data=request.data)
-        if not request_serializer.is_valid():
-            return non_valid_request_serializer(self, request_serializer)
-        user_id = request_serializer.data.get('user_id')
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-        groups = ChatGroup.objects.filter(members__id=user_id)
+    def post(self, request):
+        groups = ChatGroup.objects.filter(members__id=request.user.id)
 
         app_groups = {}
         for group in groups:
@@ -191,13 +201,12 @@ class AppGroupStatsView(APIView):
 
 
 class UserHashtagsView(APIView):
-    def post(self, request):
-        request_serializer = UserHashtagsRequestSerializer(data=request.data)
-        if not request_serializer.is_valid():
-            return non_valid_request_serializer(self, request_serializer)
-        user_id = request_serializer.data.get('user_id')
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-        hashtags = Message.objects.filter(chat_group__members__id=user_id).exclude(hashtags__isnull=True).values_list(
+    def post(self, request):
+        hashtags = Message.objects.filter(chat_group__members__id=request.user.id).exclude(
+            hashtags__isnull=True).values_list(
             'hashtags__content', flat=True)
 
         response = UserHashtagsSerializer({'hashtags': hashtags})

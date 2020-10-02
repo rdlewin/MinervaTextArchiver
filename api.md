@@ -6,10 +6,11 @@
 
 **Method:** POST
 
+**Headers:** Authorization: Bearer <JWT>
+
 **Request Data:** 
 ```json
 {
-    "user_id": 12345,
     "discussion_id": 232323,
     "page_num": 1
 }
@@ -47,10 +48,11 @@
 
 **Method:** POST
 
+**Headers:** Authorization: Bearer <JWT>
+
 **Request Data:** 
 ```json
 {
-    "user_id": 4567,
     "filters": {
         "group_ids" :  [
             1234
@@ -134,11 +136,11 @@
 
 **Method:** POST
 
+**Headers:** Authorization: Bearer <JWT>
+
 **Request Data:** 
 ```json
-{
-    "user_id": 4567
-}
+{ }
 ```
 
 **Response Data:**
@@ -162,11 +164,11 @@
 
 **Method:** POST
 
+**Headers:** Authorization: Bearer <JWT>
+
 **Request Data:** 
 ```json
-{
-    "user_id": 4567
-}
+{ }
 ```
 
 **Response Data:**
@@ -212,6 +214,8 @@
 **URL:** /account/add_app/{user_uid}/{token}/{app_id}/{app_user_uid}
 
 **Method:** POST
+
+**Headers:** Authorization: Bearer <JWT>
 
 **Request Data:** 
 ```json
