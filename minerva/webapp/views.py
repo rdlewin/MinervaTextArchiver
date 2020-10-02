@@ -14,7 +14,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from minerva.core.models import Discussion, Message, ChatGroup, User, AppUsers
-from minerva.webapp.forms import UserSignUpForm
 from minerva.webapp.serializers import DiscussionStatsRequestSerializer, DiscussionStatsSerializer, \
     GroupStatsRequestSerializer, GroupStatsSerializer, MessageSerializer, DiscussionSummaryRequestSerializer, \
     DiscussionMessageRequestSerializer, DiscussionSummarySerializer, AppGroupsSerializer, UserHashtagsRequestSerializer, \
@@ -204,19 +203,6 @@ class UserHashtagsView(APIView):
         response = UserHashtagsSerializer({'hashtags': hashtags})
 
         return JsonResponse(response.data, status=status.HTTP_200_OK, safe=False)
-
-
-def user_signup(request):
-    if request.method == "POST":
-        form = UserSignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful.")
-            return redirect("/")
-
-    form = UserSignUpForm()
-    return render(request=request, template_name="signup.html", context={"register_form": form})
 
 
 class UserRegisterView(APIView):

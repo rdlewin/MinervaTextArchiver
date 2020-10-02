@@ -179,29 +179,11 @@
 }
 ```
 
-## 5. Register New User
-
-**URL:** /account/register
-
-**Format:** form-data
-
-**Request Fields:** 
-```json
-[
-    "username",
-    "email",
-    "password1",
-    "password2"
-]
-```
-
-**Response:** HTTP 201
-
-## 6. Register User Created By Bot
+## 5. Register User Created By Bot
 
 **URL:** /account/register/{user_uid}/{token}
 
-### 6.1. Method: POST
+### 5.1. Method: POST
 
 **Request Data:** 
 ```json
@@ -211,7 +193,7 @@
 }
 ```
 
-### 6.2. Method: GET
+### 5.2. Method: GET
 
 **Response Data:**
 ```json
@@ -225,7 +207,7 @@
 
 **Response:** HTTP 201
 
-## 7. Connect User To App
+## 6. Connect User To App
 
 **URL:** /account/add_app/{user_uid}/{token}/{app_id}/{app_user_uid}
 
@@ -238,7 +220,7 @@
 
 **Response:** HTTP 201
 
-## 8. Login
+## 7. Login
 
 **URL:** /account/token
 
@@ -262,7 +244,7 @@
 }
 ```
 
-## 9. Verify login
+## 8. Verify login
 
 **URL:** /account/token/verify
 
@@ -276,7 +258,7 @@
 **Response:** HTTP 200
 
 
-## 10. Get User Data
+## 9. Get User Data
 
 **URL:** /account/details
 

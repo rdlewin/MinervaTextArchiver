@@ -18,7 +18,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
 
 from minerva.webapp.views import DiscussionStatsView, AppGroupStatsView, DiscussionMessagesView, DiscussionSummaryView, \
-    UserHashtagsView, UserRegisterView, user_signup, UserAddAppView, UserDetailsView
+    UserHashtagsView, UserRegisterView, UserAddAppView, UserDetailsView
 
 urlpatterns = [
     path('admin', admin.site.urls),
@@ -33,7 +33,6 @@ urlpatterns = [
     path('account/token/verify', TokenVerifyView.as_view(), name='token_verify'),
 
     path('account/details', UserDetailsView.as_view(), name='user_details'),
-    path('account/register', user_signup, name='user_signup'),
     path('account/register/<user_uid>/<token>', UserRegisterView.as_view(), name='register_user'),
     path('account/add_app/<user_uid>/<token>/<app_id>/<app_user_uid>', UserAddAppView.as_view(), name='add_user_app'),
 ]
