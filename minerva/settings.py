@@ -188,8 +188,8 @@ LOGGING = {
     },
 }
 
-STATIC_URL = '/ui/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'ui/')
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 try:
     from .local_settings import *
