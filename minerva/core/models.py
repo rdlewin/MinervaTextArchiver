@@ -1,3 +1,4 @@
+import random
 import re
 import logging
 
@@ -6,54 +7,74 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Message(models.Model):
-    app_message_id = models.TextField(null=False)
+    app_message_id = models.CharField(null=False, max_length=64)
     sent_date = models.DateTimeField(null=False)
     last_updated = models.DateTimeField(null=False)
     content = models.TextField(null=False, blank=False)
-    normalized_content = models.TextField(null=True, blank=False)
-    chat_group = models.ForeignKey('ChatGroup', null=False, on_delete=models.CASCADE)
-    sent_by = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
-    reply_to = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='replies')
-    discussions = models.ManyToManyField('Discussion', related_name='messages')
-    hashtags = models.ManyToManyField('Hashtag')
+    normalized_content = models.TextField(null=True, blank=True)
+    chat_group = models.ForeignKey('ChatGroup', null=False, blank=False, on_delete=models.CASCADE)
+    sent_by = models.ForeignKey('User', null=False, blank=False, on_delete=models.CASCADE)
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
+    discussions = models.ManyToManyField('Discussion', related_name='messages', blank=True)
+    hashtags = models.ManyToManyField('Hashtag', blank=True)
+
+    def __str__(self):
+        presentation_length = 64
+        brief_content = (self.content[:presentation_length] + '..') if len(self.content) > 75 else self.content
+        return f'{self.id}. {brief_content}'
 
 
 class Discussion(models.Model):
     first_message = models.ForeignKey('Message', null=False, on_delete=models.DO_NOTHING, related_name='+')
-    hashtag = models.ForeignKey('Hashtag', null=True, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey('Hashtag', null=True, blank=True, on_delete=models.CASCADE)
 
     # TODO: should be populated
     def from_hash_tag(self):
         pass
 
+    def __str__(self):
+        if not self.hashtag:
+            return str(self.id)
+
+        return f'{self.id}. {self.hashtag.content}'
+
 
 class Hashtag(models.Model):
     content = models.TextField(null=False, blank=False, unique=True)
 
+    def __str__(self):
+        return f'{self.id}. {self.content}'
+
 
 class User(AbstractUser):
-    phone_number = models.TextField(null=True, blank=False)
+    phone_number = models.CharField(null=True, blank=True, max_length=20)
+
+    def __str__(self):
+        return f'{self.id}. {self.username}'
 
 
 class ChatApp(models.Model):
-    name = models.TextField(null=False, blank=False)
+    name = models.CharField(null=False, blank=False, max_length=128)
 
     def __str__(self):
-        return self.name
+        return f'{self.id}. {self.name}'
 
 
 class AppUsers(models.Model):
     user = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
     app = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE)
-    user_app_id = models.TextField(null=False, blank=False)
+    user_app_id = models.CharField(null=False, blank=False, max_length=64)
 
 
 class ChatGroup(models.Model):
-    app_chat_id = models.TextField(null=False, blank=False)
-    name = models.TextField(null=True, blank=True)
+    app_chat_id = models.CharField(null=False, blank=False, max_length=64)
+    name = models.CharField(null=True, blank=True, max_length=128)
     application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
     members = models.ManyToManyField('User', related_name='chat_groups')
-    hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups')
+    hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups', blank=True)
+
+    def __str__(self):
+        return f'{self.id}. {self.name}'
 
 
 def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, user_email=None):
@@ -84,11 +105,9 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
     if not new_message:
         app_sender = AppUsers.objects.filter(app=chat_app, user_app_id=sender_id).first()
         if not app_sender:
-            temp_password = None
             try:
                 with transaction.atomic():
-                    new_user = User.objects.create_user(username=sender_name, email=sender_email,
-                                                        password=temp_password)
+                    new_user = User.objects.create_user(username=sender_name, email=sender_email)
                     app_sender = AppUsers.objects.create(
                         user=new_user,
                         app=chat_app,

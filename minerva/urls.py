@@ -21,7 +21,7 @@ from minerva.webapp.views import DiscussionStatsView, AppGroupStatsView, Discuss
     UserHashtagsView, UserRegisterView, UserAddAppView, UserDetailsView
 
 urlpatterns = [
-    path('admin', admin.site.urls),
+    path('admin/', admin.site.urls),
 
     path('webapp/discussions/stats', DiscussionStatsView.as_view(), name='discussion_stats'),
     path('webapp/discussions/summary', DiscussionSummaryView.as_view(), name='discussion_summary'),

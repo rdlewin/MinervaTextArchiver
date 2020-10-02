@@ -1,3 +1,7 @@
+import json
+
+from django import forms
+from django.contrib.auth import admin as auth_admin
 from django.contrib import admin
 
 # Register your models here.
@@ -5,7 +9,7 @@ from minerva.core.models import Message, Discussion, User, Hashtag, ChatApp, App
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_app_name', 'get_sent_by', 'last_updated', 'content')
+    list_display = ('id', 'get_app_name', 'get_sent_by', 'last_updated', 'get_discussions', 'content')
 
     def get_app_name(self, obj):
         return obj.chat_group.application
@@ -15,11 +19,40 @@ class MessageAdmin(admin.ModelAdmin):
     def get_sent_by(self, obj):
         return obj.sent_by.username
 
+    def get_discussions(self, obj):
+        return json.dumps([str(discussion) for discussion in obj.discussions.all()])
+
+    get_discussions.short_description = 'Discussions'
+
     get_sent_by.short_description = 'Sender'
+
+
+class DiscussionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_message', 'hashtag')
 
 
 class AppUserAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'app', 'user_app_id')
+
+
+class ChatGroupInline(admin.TabularInline):
+    model = ChatGroup.members.through
+    extra = 1
+
+
+class UserAdmin(admin.ModelAdmin):
+    fields = ('username', 'password',
+              ('first_name', 'last_name'),
+              'email',
+              'phone_number')
+    inlines = [
+        ChatGroupInline
+    ]
+
+    def get_chat_groups(self, obj):
+        return obj.chat_groups.all()
+
+    get_chat_groups.short_description = 'Chat Groups'
 
 
 class ChatGroupAdmin(admin.ModelAdmin):
@@ -27,9 +60,9 @@ class ChatGroupAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Message, MessageAdmin)
-admin.site.register(Discussion)
+admin.site.register(Discussion, DiscussionAdmin)
 admin.site.register(Hashtag)
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(ChatApp)
 admin.site.register(AppUsers, AppUserAdmin)
 admin.site.register(ChatGroup, ChatGroupAdmin)
