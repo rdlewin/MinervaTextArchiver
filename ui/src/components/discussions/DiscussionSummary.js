@@ -151,9 +151,13 @@ const styles = (theme) => ({
      renderDiscussions(){
          const {classes,data,loading} = this.props;
          const {expanded} = this.state;
-         const numMoreMessages = (data.message_count - data.latest_messages.length) >= 0?
-             data.message_count - data.latest_messages.length:
-             0;
+         let numMoreMessages;
+         if (data.discussion_id !== 'error' ){
+             numMoreMessages = (data.message_count - data.latest_messages.length) >= 0?
+                 data.message_count - data.latest_messages.length:
+                 0;
+         }
+
 
          return (
              data.discussion_id !== 'error' ?

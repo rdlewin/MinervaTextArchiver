@@ -103,7 +103,7 @@ class DiscussionScreen extends Component{
                     authorization: 'Bearer ' + Store.user[constants.userToken]
                 },
             })
-            // console.log('discussions',response);
+            console.log('discussions',response);
             const discussions = (response.data.discussions.length > 0)?
                 response.data.discussions:
                 [{discussion_id:'error'}];
