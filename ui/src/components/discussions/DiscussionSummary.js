@@ -75,6 +75,7 @@ const styles = (theme) => ({
      };
 
     componentDidMount() {
+        console.log('discussion Summary data:',this.props.data);
         this.disposer = reaction(()=>Store.lastUpdate,
             (lastUpdate)=>{
             // console.log('reseting comments', lastUpdate);
@@ -150,6 +151,9 @@ const styles = (theme) => ({
      renderDiscussions(){
          const {classes,data,loading} = this.props;
          const {expanded} = this.state;
+         const numMoreMessages = (data.message_count - data.latest_messages.length) >= 0?
+             data.message_count - data.latest_messages.length:
+             0;
 
          return (
              data.discussion_id !== 'error' ?
@@ -178,10 +182,10 @@ const styles = (theme) => ({
                              </CardActions>
                              <Collapse in={expanded} timeout="auto" unmountOnExit>
                                  <CardContent className={classes.content}>
-                                     {!loading && data.message_count > 2 &&
+                                     {!loading && data.message_count > 3 &&  !this.state.disabled &&
                                      <Chip
                                          icon={<ChatOutlinedIcon />}
-                                         label={`Show ${data.message_count - 2} More Comments`}
+                                         label={`Show ${numMoreMessages} More Comments`}
                                          clickable
                                          disabled={this.state.disabled}
                                          color="primary"
