@@ -16,11 +16,14 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import Store from "../store/Store";
-import {getInitials, stringToColour} from "../utils/utils";
-import {constants} from "../utils/constants";
+import Store from "../../store/Store";
+import {getInitials, stringToColour} from "../../utils/utils";
+import {constants} from "../../utils/constants";
 import {autorun} from "mobx";
-import UserDetails from "../components/UserDetails";
+import UserDetails from "./UserDetails";
+import {NavLink} from "react-router-dom";
+
+import HomeIcon from '@material-ui/icons/Home';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -60,9 +63,14 @@ function Header(props) {
   return (
     <React.Fragment>
       <AppBar color="primary" position="sticky" elevation={0}>
-        <Toolbar></Toolbar>
+
         <Toolbar>
-          <Grid container spacing={1} alignItems="center">
+          <Grid container
+                direction='row'
+                alignItems='center'
+                justify='space-between'
+                spacing={1}
+               >
             <Hidden smUp>
               <Grid item>
                 <IconButton
@@ -75,10 +83,48 @@ function Header(props) {
                 </IconButton>
               </Grid>
             </Hidden>
-            {userinfo}
+            <Grid item>
+              <Grid
+                  container
+                  direction='row'
+                  alignItems='center'
+                  justify='flex-start'
+                  spacing={1}
+              >
+                <Grid item>
+                  <Link className={classes.link}
+                        component={NavLink} to='/' exact
+                        activeStyle={{
+                          fontWeight: 'bold',
+
+                          color: 'white',
+                        }}
+                        variant="body1"
+                  >
+                   <HomeIcon />
+                  </Link>
+                </Grid >
+                <Grid item>
+                  <Link className={classes.link}
+                        component={NavLink} to='/about' exact
+                        activeStyle={{
+                          fontWeight: 'bold',
+
+                          color: 'white'
+                        }}
+                        variant="body1"
+                  >
+                    Meet The Team
+                  </Link>
+                </Grid >
+              </Grid>
+            </Grid>
+
+            <Grid item >
+              {userinfo}
+            </Grid>
           </Grid>
         </Toolbar>
-        <Toolbar></Toolbar>
       </AppBar>
       {/*<AppBar*/}
       {/*  component="div"*/}

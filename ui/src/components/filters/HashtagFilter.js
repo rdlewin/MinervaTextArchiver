@@ -3,11 +3,11 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from "../data/axios";
+import axios from "../../data/axios";
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
-import Store from "../store/Store";
-import {constants} from '../utils/constants';
+import Store from "../../store/Store";
+import {constants} from '../../utils/constants';
 import Checkbox from "@material-ui/core/Checkbox";
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -55,7 +55,7 @@ function HashtagFilter (props) {
             const {data} = response;
             console.log('hashtags-data: ' ,data);
             if (active) {
-                setOptions(data.hashtags);
+                setOptions(Array.from(new Set(data.hashtags)));
             }
             if (data.hashtags.length === 0) {
                 setOpen(false);

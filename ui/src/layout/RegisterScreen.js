@@ -12,7 +12,7 @@ import {Copyright} from "../utils/utils";
 import Container from '@material-ui/core/Container';
 import withStyles from "@material-ui/core/styles/withStyles";
 
-
+// /register/Nw/aatlyd-c65ac02e79d1dd34c06e868927d4f94b
 
 
 const styles = (theme) => ({
@@ -51,26 +51,90 @@ const styles = (theme) => ({
 class RegisterScreen extends Component {
     state = {
         username: '',
+        email: '',
         password1: '',
         password2: '',
+        errors:{
+            username: '',
+            email: '',
+            password1: '',
+            password2: ''
+        },
+        formError:'',
     };
 
     onInputChange = e => {
         const name = e.target.name;
         const value = e.target.value;
+        const error = this.validate(name,value);
         this.setState(prevstate => {
             const newState = { ...prevstate };
             newState[name] = value;
+            newState.errors = {...prevstate.errors};
+            newState.errors[name] = error;
             return newState;
         });
     };
 
-    onSubmitLogin = e =>{
+    validate = (name,value) =>{
+        let error;
+        switch (name){
+            case 'username':
+                if (value.length < 4){
+                    error = 'User Name Must be at least 4 letters. ';
+                }
+                break;
+            case 'email':
+                const regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
+                if (!regex.test(value)){
+                    error = 'Please Enter a Valid E-Mail';
+                }
+                break;
+            case 'password1':
+                if (value.length < 6){
+                    error = 'User Name Must be at least 6 letters. ';
+                }
+                break;
+            case 'password2':
+                if (this.state.password1 !== value){
+                    error = 'Passwords are not the same'
+                }
+                break;
+        }
 
-        console.log(this.state.username);
-        console.log(this.state.password1);
-        console.log(this.state.password2);
+
+        return error;
+    }
+
+
+    onSubmitLogin = e =>{
         e.preventDefault();
+        const {errors} = this.state;
+        let errorFound = false;
+        Object.keys(errors).forEach (prop=>{
+            if (errors[prop]){
+
+                this.setState({formError:'Form Still Has Errors.'});
+                errorFound = true;
+                return false;
+            }
+
+
+        });
+
+        if (errorFound){
+            return;
+        }
+        this.setState({formError:''});
+        const {user_uid, token} = this.props.match.params;
+        const id = atob(user_uid+'==');
+
+        // console.log(this.state.username);
+        // console.log(this.state.email);
+        // console.log(this.state.password1);
+        // console.log(this.state.password2);
+
+
     }
 
 
@@ -89,7 +153,7 @@ class RegisterScreen extends Component {
                     </Typography>
                     <form
                         className={classes.form}
-                        noValidate
+
                         onSubmit={this.onSubmitLogin}
                     >
                         <TextField
@@ -100,10 +164,26 @@ class RegisterScreen extends Component {
                             id="username"
                             label="User Name"
                             name="username"
-                            autoComplete="username"
+                            autoComplete="off"
                             autoFocus
                             value={this.state.username}
                             onChange={this.onInputChange}
+                            error={this.state.errors.username}
+                            helperText={this.state.errors.username}
+                        />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="E-Mail"
+                            name="email"
+                            autoComplete="off"
+                            value={this.state.email}
+                            onChange={this.onInputChange}
+                            error={this.state.errors.email}
+                            helperText={this.state.errors.email}
                         />
                         <TextField
                             variant="outlined"
@@ -114,9 +194,11 @@ class RegisterScreen extends Component {
                             label="Password"
                             type="password"
                             id="password1"
-                            autoComplete="current-password"
+                            autoComplete="off"
                             value={this.state.password1}
                             onChange={this.onInputChange}
+                            error={this.state.errors.password1}
+                            helperText={this.state.errors.password1}
 
                         />
                         <TextField
@@ -128,11 +210,23 @@ class RegisterScreen extends Component {
                             label="Confirm Password"
                             type="password"
                             id="password2"
-                            autoComplete="current-password"
+                            autoComplete="off"
                             value={this.state.password2}
                             onChange={this.onInputChange}
+                            error={this.state.errors.password2}
+                            helperText={this.state.errors.password2}
 
                         />
+                        <Grid container
+                              direction="row"
+                              justify="center">
+                            <Grid item  >
+                                <Typography color='secondary' style={{fontWeight:'bold'}} variant="h6">
+                                    {this.state.formError}
+                                </Typography>
+                            </Grid>
+
+                        </Grid>
                         <Button
                             type="submit"
                             fullWidth
@@ -142,16 +236,7 @@ class RegisterScreen extends Component {
                         >
                             Register
                         </Button>
-                        <Grid container
-                              direction="row"
-                              justify="flex-end">
-                            <Grid item  >
-                                <Link href="#" variant="body2">
-                                    Already have an account?
-                                </Link>
-                            </Grid>
 
-                        </Grid>
                     </form>
                 </div>
                 <Box mt={8}>

@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
-import DiscussionSummary from "./DiscussionSummary";
+import DiscussionSummary from "../discussions/DiscussionSummary";
 import clsx from "clsx";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -12,10 +12,10 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import GroupItem from "./GroupItem";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Button} from "@material-ui/core";
-import axios from "../data/axios";
+import axios from "../../data/axios";
 import {observer} from "mobx-react";
-import Store from "../store/Store";
-import {constants} from "../utils/constants";
+import Store from "../../store/Store";
+import {constants} from "../../utils/constants";
 import Box from "@material-ui/core/Box";
 import {autorun} from "mobx";
 

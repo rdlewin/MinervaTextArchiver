@@ -112,14 +112,19 @@ class SignInScreen extends Component {
                 [constants.userID]:userRes.data.id
             });
             this.setState({signedIn:true});
-            setTimeout(()=>{
-                this.props.history.replace(this.state.from);
-            },3000);
+            if (this.props.addApp){
+                this.props.addApp();
+            }
+            else {
+                setTimeout(() => {
+                    this.props.history.replace(this.state.from);
+                }, 3000);
+            }
 
         } catch (err) {
             console.log('error:',err.response);
             if (err.response.status === 401){
-                this.setState({error:'Bad User Name or Password!!', password:''});
+                this.setState({error:'Bad User Name or Password!', password:''});
             }
         }
 

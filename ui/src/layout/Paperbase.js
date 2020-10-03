@@ -3,15 +3,12 @@ import PropTypes from 'prop-types';
 import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Navigator from './Navigator';
+import Navigator from '../components/nav/Navigator';
 import Content from './Content';
-import Header from './Header';
+import Header from '../components/nav/Header';
 import {Copyright} from "../utils/utils";
-import Store from '../store/Store';
-import {autorun} from 'mobx';
-
+import {Route, Switch} from 'react-router-dom';
+import TeamPage from "./TeamPage";
 
 let theme = createMuiTheme({
   palette: {
@@ -188,7 +185,12 @@ function Paperbase(props) {
         <div className={classes.app}>
           <Header onDrawerToggle={handleDrawerToggle} />
           <main className={classes.main}>
-            <Content />
+           <Switch>
+             <Route path={'/'} exact component={Content}/>
+             <Route path={'/about'} exact component={TeamPage}/>
+             <Route path={'/'} render={(props)=><div>{window.location.replace('/404.html')}</div>}/>
+           </Switch>
+            {/*<Content />*/}
           </main>
           <footer className={classes.footer}>
             <Copyright />

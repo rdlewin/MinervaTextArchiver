@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import DiscussionSummary from "../components/DiscussionSummary";
+import DiscussionSummary from "../components/discussions/DiscussionSummary";
 import Toolbar from "@material-ui/core/Toolbar";
 import Grid from "@material-ui/core/Grid";
 import SearchIcon from "@material-ui/icons/Search";
@@ -74,6 +74,7 @@ class DiscussionScreen extends Component{
     }
 
     componentDidMount() {
+
         this.disposer = autorun(()=>{
             this.getDiscussions(Store.filters);
         })
@@ -102,8 +103,9 @@ class DiscussionScreen extends Component{
                     authorization: 'Bearer ' + Store.user[constants.userToken]
                 },
             })
-            const discussions = (response.data.length > 0)?
-                response.data:
+            // console.log('discussions',response);
+            const discussions = (response.data.discussions.length > 0)?
+                response.data.discussions:
                 [{discussion_id:'error'}];
             this.setState({
                 dataList: discussions,

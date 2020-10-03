@@ -24,19 +24,28 @@ export function getHierarchy (list){
         return nodes;
     },{});
 
+    const rootElement = list.find(node =>{
+        if (!node.reply_to_id){
+            return node;
+        }
+    });
 
     list.forEach(node => {
        const parent = node.reply_to_id;
        if (parent !== null) {
-           nodesMap[parent].children.push(node);
+           if (nodesMap[parent]) {
+               nodesMap[parent].children.push(node);
+           }
+           else {
+               rootElement.children.push(node);
+           }
+       }
+       else if (node !== rootElement){
+           rootElement.children.push(node);
        }
     });
 
-    const rootElement = list.find(node =>{
-       if (!node.reply_to_id){
-           return node;
-       }
-    });
+
 
     return rootElement;
 }

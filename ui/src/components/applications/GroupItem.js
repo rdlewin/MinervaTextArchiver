@@ -3,8 +3,8 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import {Button} from "@material-ui/core";
 import Badge from "@material-ui/core/Badge";
 import {observer} from "mobx-react";
-import Store from "../store/Store";
-import {constants} from "../utils/constants";
+import Store from "../../store/Store";
+import {constants} from "../../utils/constants";
 import clsx from "clsx";
 
 const styles = (theme) => ({
@@ -51,7 +51,7 @@ class GroupItem extends Component {
 
                     </Button>
 
-                <StyledBadge badgeContent={group.num_discussions || '0'} max={99} color="primary">
+                <StyledBadge badgeContent={group.discussions_count || '0'} max={99} color="primary">
                 </StyledBadge>
             </div>
         )

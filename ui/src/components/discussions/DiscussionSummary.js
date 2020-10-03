@@ -19,16 +19,16 @@ import clsx from "clsx";
 import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOff';
 import CommentsList from "./CommentsList";
 import Button from "@material-ui/core/Button";
-import {getInitials, getHierarchy, stringToColour} from "../utils/utils";
+import {getInitials, getHierarchy, stringToColour} from "../../utils/utils";
 import Chip from "@material-ui/core/Chip";
-import axios from "../data/axios";
+import axios from "../../data/axios";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
-import Store from "../store/Store";
+import Store from "../../store/Store";
 import {observer} from "mobx-react";
 import {reaction, toJS} from "mobx";
-import {constants} from "../utils/constants";
+import {constants} from "../../utils/constants";
 
 const styles = (theme) => ({
     root: {
@@ -106,6 +106,7 @@ const styles = (theme) => ({
     onLoadComments = () => {
         this.setState({commentsLoading : true, commentsInitiated : true});
          this.getComments().then(data=>{
+             console.log(data);
              this.setState({
                  disabled : true,
                  commentsLoading : false,
@@ -122,11 +123,12 @@ const styles = (theme) => ({
              page_num: 0,
 
          };
-         const response = await axios.post('discussions/stats',postObj,{
+         const response = await axios.post('messages',postObj,{
              headers:{
                  authorization: 'Bearer ' + Store.user[constants.userToken]
              },
          });
+         // console.log('Messages:',response);
          return response.data;
 
      }

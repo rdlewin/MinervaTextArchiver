@@ -15,8 +15,8 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Grow from "@material-ui/core/Grow";
 import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
-import Store from "../store/Store";
-import {constants} from "../utils/constants";
+import Store from "../../store/Store";
+import {constants} from "../../utils/constants";
 
 const styles = () => ({
     hide:{

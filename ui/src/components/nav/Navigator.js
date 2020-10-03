@@ -20,13 +20,13 @@ import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponen
 import TimerIcon from '@material-ui/icons/Timer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
-import ApplicationsList from "../components/ApplicationsList";
+import ApplicationsList from "../applications/ApplicationsList";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import HashtagFilter from "../components/HashtagFilter";
-import TimeFiltersRadio from "../layout/TimeFiltersRadio";
+import HashtagFilter from "../filters/HashtagFilter";
+import TimeFiltersRadio from "../filters/TimeFiltersRadio";
 import {Button} from "@material-ui/core";
-import Store from "../store/Store";
-import {constants} from "../utils/constants";
+import Store from "../../store/Store";
+import {constants} from "../../utils/constants";
 import {observer} from 'mobx-react';
 
 const categories = [

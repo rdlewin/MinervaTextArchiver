@@ -1,14 +1,15 @@
 import React from 'react';
 
 import './App.css';
-import SignInScreen from "./components/SignInScreen";
+import SignInScreen from "./layout/SignInScreen";
 
 import {BrowserRouter, Redirect} from "react-router-dom";
-import Paperbase from "./paperbase/Paperbase";
+import Paperbase from "./layout/Paperbase";
 import {Route, Switch} from "react-router";
-import RegisterScreen from "./components/RegisterScreen";
+import RegisterScreen from "./layout/RegisterScreen";
 import Store from './store/Store';
 import {observer} from "mobx-react";
+import AddApp from "./components/registration/AddApp";
 
 
 
@@ -17,8 +18,13 @@ const App = observer(() => {
     <BrowserRouter>
       <div >
           <Switch>
-              {/*<GuardedRoute path='/' component={Paperbase} auth={Store.validate()} redirect='/signin'/>*/}
-              <Route path={'/'} exact  render={(props) => (
+
+              <Route path={'/signin'} exact component={SignInScreen}/>
+              {/*{user_uid}/{token}*/}
+              <Route path={'/register/:user_uid/:token'}  component={RegisterScreen}/>
+              {/*{user_uid}/{token}/{app_id}/{app_user_uid}*/}
+              <Route path={'/addapp/:user_uid/:token/:app_id/:app_user_uid'}  component={AddApp}/>
+              <Route path={'/'}   render={(props) => (
                   Store.signedIn === true
                       ? <Paperbase {...props} />
                       : <Redirect to={{
@@ -26,8 +32,7 @@ const App = observer(() => {
                           state: { from: '/' }
                       }} />
               )}/>
-              <Route path={'/signin'} exact component={SignInScreen}/>
-              <Route path={'/register'} exact component={RegisterScreen}/>
+
           </Switch>
       </div>
     </BrowserRouter>

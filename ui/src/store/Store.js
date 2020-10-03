@@ -44,19 +44,24 @@ class Store{
        }
        window.location.replace('/')
    }
-   @action validate(){
+   @action async validate(){
         if (this.signedIn){
-            axios.get('/account/details', {
-                headers:{
-                    authorization: 'Bearer ' + this.user[constants.userToken]
-                }
-            }).then(userRes=>{
+            try {
+                const userRes = await axios.get('/account/details', {
+                    headers: {
+                        authorization: 'Bearer ' + this.user[constants.userToken]
+                    }
+                })
+
                 console.log('inside validate');
                 this.setUser({
-                    [constants.userName]:userRes.data.username,
-                    [constants.userID]:userRes.data.id
+                    [constants.userName]: userRes.data.username,
+                    [constants.userID]: userRes.data.id
                 });
-            }).catch(err=>{});
+            }
+            catch (e) {
+
+            }
 
 
         }
