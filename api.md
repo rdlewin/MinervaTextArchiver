@@ -2,7 +2,7 @@
 
 ## 1. Discussion Messages
 
-**URL:** /webapp/discussions/stats
+**URL:** /webapp/messages
 
 **Method:** POST
 
@@ -12,7 +12,6 @@
 ```json
 {
     "discussion_id": 232323,
-    "page_num": 1
 }
 ```
 
