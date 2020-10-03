@@ -75,7 +75,7 @@ function HashtagFilter (props) {
 
     const onChange = (e,value)=>{
         const hashtags = value.reduce((prev,current)=>{
-            return [...prev,current.hashtag];
+            return [...prev,current];
         },[]);
         Store.setFilter({[constants.filterHashtag]:hashtags});
     }
