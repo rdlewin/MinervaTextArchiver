@@ -180,10 +180,14 @@ class AppGroupStatsView(APIView):
             last_updated = None
             if last_group_message:
                 last_updated = last_group_message.last_updated.isoformat()
+            discussions_count = Discussion.objects.filter(first_message__chat_group=group).count()
 
-            group_stats = GroupStatsSerializer({'id': group.id,
-                                                'name': group.name,
-                                                'last_updated': last_updated})
+            group_stats = GroupStatsSerializer({
+                'id': group.id,
+                'name': group.name,
+                'last_updated': last_updated,
+                'discussions_count': discussions_count
+            })
             if group.application not in app_groups:
                 app_groups[group.application] = [group_stats]
             else:

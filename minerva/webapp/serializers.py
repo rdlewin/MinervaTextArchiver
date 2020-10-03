@@ -143,6 +143,7 @@ class GroupStatsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     last_updated = serializers.DateTimeField()
+    discussions_count = serializers.IntegerField()
 
 
 class AppGroupsSerializer(serializers.Serializer):
