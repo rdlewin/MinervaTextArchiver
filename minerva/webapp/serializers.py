@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 class DiscussionMessageRequestSerializer(serializers.Serializer):
     discussion_id = serializers.IntegerField(required=True)
-    page_num = serializers.IntegerField(required=True)
 
 
 class DiscussionIdSerializer(serializers.Serializer):

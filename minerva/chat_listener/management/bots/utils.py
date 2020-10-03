@@ -31,8 +31,8 @@ def get_welcome_message(user: AbstractUser, app_id, app_user_id: int):
     app_user_uid = urlsafe_base64_encode(force_bytes(app_user_id))
     token = default_token_generator.make_token(user)
 
-    register_url = urljoin(domain, '/'.join(['account', 'register', user_uid, token]))
-    add_app_user_url = urljoin(domain, '/'.join(['account', 'add_app', user_uid, token, str(app_id), app_user_uid]))
+    register_url = urljoin(domain, '/'.join(['register', user_uid, token]))
+    add_app_user_url = urljoin(domain, '/'.join(['addApp', user_uid, token, str(app_id), app_user_uid]))
 
     return WELCOME_MESSAGE_TEMPLATE.format(register_url=register_url, add_app_user_url=add_app_user_url)
 
