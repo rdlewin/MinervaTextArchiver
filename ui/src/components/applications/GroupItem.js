@@ -24,8 +24,6 @@ const styles = (theme) => ({
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
-        // right: -10,
-        // top: 13,
         border: `2px solid ${theme.palette.background.paper}`,
         padding: '0 4px',
         backgroundColor : 'purple',

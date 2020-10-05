@@ -9,8 +9,7 @@ import Link from "@material-ui/core/Link";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {observer} from "mobx-react";
 import {autorun} from "mobx";
-import {NavLink} from "react-router-dom";
-import ModalDialog from "../modal/ModalDialog";
+
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 

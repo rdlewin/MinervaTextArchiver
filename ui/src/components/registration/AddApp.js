@@ -1,30 +1,23 @@
-import React , {Component} from 'react';
-import SignInScreen from "../../layout/SignInScreen";
+import React, {Component, Fragment} from 'react';
 import Store from "../../store/Store";
 import {observer} from 'mobx-react';
 import {constants} from "../../utils/constants";
-import {autorun} from "mobx";
 import { Redirect} from "react-router-dom";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import Slide from "@material-ui/core/Slide";
 import ModalDialog from "../modal/ModalDialog";
+import axios from 'axios';
+import { decode } from 'js-base64';
 
-//addapp/Nw/aatlyd-c65ac02e79d1dd34c06e868927d4f94b/1/NTc4ODAwNTMy
 
-//{user_uid}/{token}/{app_id}/{app_user_uid}
+//  /addapp/{user_uid}/{token}/{app_id}/{app_user_uid}
 @observer
 class AddApp extends Component {
     state = {
         needSignIn: false,
-        open: false,
+        openError1: false,
+        openError2:false,
     }
     componentDidMount() {
-
+        console.log('register', this.props);
         this.checkUser();
 
     }
@@ -48,28 +41,36 @@ class AddApp extends Component {
         await Store.validate();
         console.log('user',Store.user[constants.userID]);
         const {user_uid, token, app_id,app_user_uid} = this.props.match.params;
-        const id = atob(user_uid+'==');
+        const id = decode(user_uid);
         if (Store.user[constants.userID] == id){
-            console.log('register', this.props.match.params);
+
+            const url = `/account/add_app/${user_uid}/${token}/${app_id}/${app_user_uid}`;
+            console.log('addApp post url:',url)
+            try {
+                const response = await axios.post(url, {},{
+                    headers: {
+                        authorization: 'Bearer ' + Store.user[constants.userToken],
+                    }
+                });
+
+            }
+            catch (e){
+                this.setState({openError2:true});
+            }
         }
         else{
-            this.setState({open:true});
+            this.setState({openError1:true});
         }
 
 
     }
 
-    transition = React.forwardRef(function Transition(props, ref) {
-        return <Slide direction="up" ref={ref} {...props} />;
-    });
 
     onDialogClose(){
-        // this.setState({open:false});
         window.location.replace('/');
     }
 
     onDialogSignIn(){
-        //this.setState({open:false});
         Store.signOut();
         location.reload();
     }
@@ -81,16 +82,25 @@ class AddApp extends Component {
                 <Redirect to={{
                     pathname: '/signin',
                     state: { from: this.props.match.url }}}/>:
-                <ModalDialog
-                    title={'User Error'}
-                    content={' This link is not for the Current User. Please Sign In Again'}
-                    open={this.state.open}
-                    onCancel={this.onDialogClose}
-                    onOk={this.onDialogSignIn}
-                    buttonText={'Sign In'}
+                <Fragment>
+                    <ModalDialog
+                        title={'User Error'}
+                        content={' This link is not for the Current User. Please Sign In Again'}
+                        open={this.state.openError1}
+                        onCancel={this.onDialogClose}
+                        onOk={this.onDialogSignIn}
+                        buttonText={'Sign In'}
 
-                />
+                    />
+                    <ModalDialog
+                        title={'Server Error'}
+                        content={'This link has either Expired or had already been used'}
+                        open={this.state.openError2}
+                        onCancel={this.onDialogClose}
 
+
+                    />
+                </Fragment>
         )
     }
 }

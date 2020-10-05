@@ -11,7 +11,6 @@ import AppBar from "@material-ui/core/AppBar";
 import withStyles from "@material-ui/core/styles/withStyles";
 import axios from '../data/axios';
 import {autorun, toJS} from "mobx";
-import Skeleton from "@material-ui/lab/Skeleton";
 import Store from "../store/Store";
 import {DelayInput} from "react-delay-input";
 import {constants} from "../utils/constants";

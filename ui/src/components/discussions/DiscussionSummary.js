@@ -2,19 +2,13 @@ import React, {Component} from 'react';
 import {withStyles} from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import ChatOutlinedIcon from '@material-ui/icons/ChatOutlined';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from "clsx";
 import SpeakerNotesOffIcon from '@material-ui/icons/SpeakerNotesOff';
 import CommentsList from "./CommentsList";
@@ -23,12 +17,12 @@ import {getInitials, getHierarchy, stringToColour} from "../../utils/utils";
 import Chip from "@material-ui/core/Chip";
 import axios from "../../data/axios";
 import Skeleton from "@material-ui/lab/Skeleton";
-import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
 import Store from "../../store/Store";
 import {observer} from "mobx-react";
 import {reaction, toJS} from "mobx";
 import {constants} from "../../utils/constants";
+import {formatDate} from "../../utils/utils";
 
 const styles = (theme) => ({
     root: {
@@ -171,7 +165,7 @@ const styles = (theme) => ({
                                      </Avatar>
                                  }
                                  title={data.hashtag || 'General Discussion'}
-                                 subheader={`${data.first_message.sender_name}, ${data.first_message.sent_date}`}
+                                 subheader={`${data.first_message.sender_name}, ${formatDate(data.first_message.sent_date)}`}
                              />
                              <CardContent>
                                  <Typography variant="body2" color="textSecondary" component="p">

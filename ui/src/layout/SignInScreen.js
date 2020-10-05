@@ -11,14 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Copyright} from "../utils/utils";
-import axios from 'axios';
-import Store from "../store/Store";
-import {constants} from "../utils/constants";
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
-import {toJS} from "mobx";
 import Zoom from "@material-ui/core/Zoom";
-
-
+import {doSignIn} from "../utils/utils";
 
 
 const styles = (theme) => ({
@@ -90,27 +85,8 @@ class SignInScreen extends Component {
     }
 
     async signIn(){
-
-        const postObj = {
-            username: this.state.username,
-            password: this.state.password
-        };
-        // console.log(postObj);
         try {
-            const response = await axios.post('/account/token', postObj);
-            // console.log(response);
-            localStorage.setItem('token',response.data.access);
-            const userRes = await axios.get('/account/details', {
-                headers:{
-                    authorization: 'Bearer ' + response.data.access
-                }
-            });
-            // console.log(userRes);
-            Store.setUser({
-                [constants.userToken]:response.data.access,
-                [constants.userName]:userRes.data.username,
-                [constants.userID]:userRes.data.id
-            });
+            await doSignIn(this.state.username,this.state.password);
             this.setState({signedIn:true});
             if (this.props.addApp){
                 this.props.addApp();

@@ -1,13 +1,8 @@
 import React, {Component, Fragment} from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
-import DiscussionSummary from "../discussions/DiscussionSummary";
 import clsx from "clsx";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
-import Typography from "@material-ui/core/Typography";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import GroupItem from "./GroupItem";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -72,13 +67,6 @@ const styles = (theme) => ({
     }
 });
 
-
-// list: {
-//     overflowY: "auto",
-//         margin: 0,
-//         padding: 0,
-//         listStyle: "none",
-//         height: "100%",
 
 const ITEM_HEIGHT = 48;
 @observer

@@ -6,14 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
 import withStyles from "@material-ui/core/styles/withStyles";
-import Grow from "@material-ui/core/Grow";
-import Zoom from "@material-ui/core/Zoom";
 import Slide from "@material-ui/core/Slide";
 import Store from "../../store/Store";
 import {constants} from "../../utils/constants";

@@ -1,11 +1,13 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {  MDBRow, MDBCol, MDBCard, MDBCardBody, MDBIcon } from "mdbreact";
 import Avatar from "@material-ui/core/Avatar";
 import withStyles from "@material-ui/core/styles/withStyles";
 import clsx from "clsx";
 import naomi from '../assets/images/naomi.jpeg';
 import roy from '../assets/images/roy.jpeg';
-import itamar from '../assets/images/itamar.jpg';
+import itamar2 from '../assets/images/itamar2.jpg';
+import Grow from "@material-ui/core/Grow";
+
 
 const styles = (theme) =>({
     avatar:{
@@ -20,85 +22,105 @@ const styles = (theme) =>({
 });
 
 const TeamPage = (props) => {
+    const [open,setOpen] = useState(false);
     const {classes} = props;
+    useEffect(()=>{
+        setOpen(true);
+
+        return function cleanup () {
+            setOpen(false);
+        }
+    },[])
     return (
-        <MDBCard className="my-5 px-5 pb-5 text-center">
-            <MDBCardBody>
-                <h2 className="h1-responsive font-weight-bold my-5">
-                    Our amazing team
-                </h2>
-                <p className="grey-text w-responsive mx-auto mb-5">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit,
-                    error amet numquam iure provident voluptate esse quasi, veritatis
-                    totam voluptas nostrum quisquam eum porro a pariatur veniam.
-                </p>
-                <MDBRow>
-                    <MDBCol lg="4" md="6"  className="mb-lg-0 mb-5 ">
-                        <Avatar
-                            tag="img"
-                            src={naomi}
-                            className={clsx(classes.avatar,'d-flex justify-content-center')}
-                            alt="naomi avatar"
+        <Grow in={open} mountOnEnter unmountOnExit timeout={750}>
+            <MDBCard className="my-5 px-5 pb-5 text-center">
+                <MDBCardBody>
+                    <h2 className="h1-responsive font-weight-bold my-4">
+                        Our talented & experienced team delivers amazing results
+                    </h2>
+                    <h6 className=" h4-responsive font-weight-bold w-responsive mx-auto mb-5">
+                        We have a can-do attitude backed up by delivering<br/>high-end,
+                       creative solutions on time and on budget
+                    </h6>
+                    <MDBRow>
+                        <MDBCol lg="4" md="6"  className="mb-lg-0 mb-5 ">
+                            <Avatar
+                                tag="img"
+                                src={naomi}
+                                className={clsx(classes.avatar,'d-flex justify-content-center')}
+                                alt="naomi avatar"
 
-                        />
-                        <h5 className="font-weight-bold mt-4 mb-3">Naomi Kriger</h5>
-                        <p className="text-uppercase blue-text">BackEnd Developer</p>
-                        <p className="grey-text">
-                            Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-                            consectetur, adipisci sed quia non numquam modi tempora eius.
-                        </p>
-                        <ul className="list-unstyled mb-0">
-                            <a href="#!" className="p-2 fa-lg">
-                                <MDBIcon fab icon="linkedin-in"  />
-                            </a>
-                        </ul>
-                    </MDBCol>
+                            />
+                            <h5 className="font-weight-bold mt-4 mb-3">Naomi Kriger</h5>
+                            <p className="text-uppercase blue-text">BackEnd Developer</p>
+                            <p className="grey-text">
+                                Our BackEnd developer. Developed the server side using Python and Django.
+                                Naomi also works as a Python developer in a Fintech company
+                                and has previous experience as a Risk & Data Analyst.
+                                Experienced with SQL & MongoDB, and familiar with Java.
+                            </p>
+                            <ul className="list-unstyled mb-0">
+                                <a href="https://www.linkedin.com/in/naomi-kriger/"
+                                   target="_blank" rel="noopener noreferrer"
+                                   className="p-2 fa-lg">
+                                    <MDBIcon fab icon="linkedin-in"  />
+                                </a>
+                            </ul>
+                        </MDBCol>
 
-                    <MDBCol lg="4" md="6" className="mb-lg-0 mb-5">
-                        <Avatar
-                            tag="img"
-                            src={itamar}
-                            className={classes.avatar}
-                            alt="Sample avatar"
-                        />
-                        <h5 className="font-weight-bold mt-4 mb-3">Itamar Glick</h5>
-                        <p className="text-uppercase blue-text">FrontEnd Developer</p>
-                        <p className="grey-text">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                            ipsa accusantium doloremque rem laudantium totam aperiam.
-                        </p>
-                        <ul className="list-unstyled mb-0">
-                            <a href="#!" className="p-2 fa-lg">
-                                <MDBIcon fab icon="linkedin-in"  />
-                            </a>
-                        </ul>
-                    </MDBCol>
+                        <MDBCol lg="4" md="6" className="mb-lg-0 mb-5">
+                            <Avatar
+                                tag="img"
+                                src={itamar2}
+                                className={classes.avatar}
+                                alt="Sample avatar"
+                            />
+                            <h5 className="font-weight-bold mt-4 mb-3">Itamar Glick</h5>
+                            <p className="text-uppercase blue-text">FrontEnd Developer</p>
+                            <p className="grey-text">
+                                Our FrontEnd developer. Developed the UI using ReactJS
+                                with Material-UI and MobX. In addition to developing Minerva,
+                                Itamar also works as a Citrix and System Administrator,
+                                where he writes scripts in PowerShell that are UX/UI empowered by WPF.
+                            </p>
+                            <ul className="list-unstyled mb-0">
+                                <a href="https://www.linkedin.com/in/itamar-glick-03735847/"
+                                   target="_blank" rel="noopener noreferrer"
+                                   className="p-2 fa-lg">
+                                    <MDBIcon fab icon="linkedin-in"  />
+                                </a>
+                            </ul>
+                        </MDBCol>
 
-                    <MDBCol lg="4" md="6" className="mb-lg-0 mb-5">
-                        <Avatar
-                            tag="img"
-                            src={roy}
-                            className={classes.avatar}
-                            alt="Sample avatar"
-                        />
-                        <h5 className="font-weight-bold mt-4 mb-3">Roy Lewin</h5>
-                        <p className="text-uppercase blue-text">BackEnd Developer</p>
-                        <p className="grey-text">
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                            qui officia deserunt mollit anim est fugiat nulla id eu laborum.
-                        </p>
-                        <ul className="list-unstyled mb-0">
-                            <a href="#!" className="p-2 fa-lg">
-                                <MDBIcon fab icon="linkedin-in"  />
-                            </a>
+                        <MDBCol lg="4" md="6" className="mb-lg-0 mb-5">
+                            <Avatar
+                                tag="img"
+                                src={roy}
+                                className={classes.avatar}
+                                alt="Sample avatar"
+                            />
+                            <h5 className="font-weight-bold mt-4 mb-3">Roy Lewin</h5>
+                            <p className="text-uppercase blue-text">BackEnd Developer</p>
+                            <p className="grey-text">
+                                Our BackEnd developer. Developed the server side using Python and Django.
+                                Roy also works as a BackEnd developer in a fraud-prevention company,
+                                Experienced with Python and developing data streaming services to Hadoop and SQL.
+                            </p>
+                            <ul className="list-unstyled mb-0">
+                                <a href="https://www.linkedin.com/in/roy-lewin-8519a773/"
+                                   target="_blank" rel="noopener noreferrer"
+                                   className="p-2 fa-lg">
+                                    <MDBIcon fab icon="linkedin-in"  />
+                                </a>
 
-                        </ul>
-                    </MDBCol>
+                            </ul>
+                        </MDBCol>
 
 
-                </MDBRow>
-            </MDBCardBody>
-        </MDBCard>
+                    </MDBRow>
+                </MDBCardBody>
+            </MDBCard>
+        </Grow>
     );
 }
 

@@ -8,26 +8,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import HomeIcon from '@material-ui/icons/Home';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import AppsIcon from '@material-ui/icons/Apps';
-import PeopleIcon from '@material-ui/icons/People';
-import DnsRoundedIcon from '@material-ui/icons/DnsRounded';
-import PermMediaOutlinedIcon from '@material-ui/icons/PhotoSizeSelectActual';
-import PublicIcon from '@material-ui/icons/Public';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
-import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponent';
-import TimerIcon from '@material-ui/icons/Timer';
-import SettingsIcon from '@material-ui/icons/Settings';
-import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
 import ApplicationsList from "../applications/ApplicationsList";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import HashtagFilter from "../filters/HashtagFilter";
 import TimeFiltersRadio from "../filters/TimeFiltersRadio";
-import {Button} from "@material-ui/core";
-import Store from "../../store/Store";
-import {constants} from "../../utils/constants";
-import {observer} from 'mobx-react';
 
 const categories = [
   {
@@ -35,7 +21,6 @@ const categories = [
     children: [
         { id: 'HashTag', icon: <LocalOfferIcon />, childElement: <HashtagFilter/>},
         { id: 'Date Range', icon: <DateRangeIcon /> ,childElement: <TimeFiltersRadio/>},
-      // { id: 'Filter', icon: <PhonelinkSetupIcon />,childElement: null },
     ],
   },
 ];
@@ -112,18 +97,6 @@ function Navigator (props) {
         <ListItem className={classes.firebase}>
           <div className={classes.logo}></div>
         </ListItem>
-        {/*<ListItem className={clsx(classes.item, classes.itemCategory)}>*/}
-        {/*  <ListItemIcon className={classes.itemIcon}>*/}
-        {/*    <HomeIcon />*/}
-        {/*  </ListItemIcon>*/}
-        {/*  <ListItemText*/}
-        {/*    classes={{*/}
-        {/*      primary: classes.itemPrimary,*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Home*/}
-        {/*  </ListItemText>*/}
-        {/*</ListItem>*/}
         <ListItem className={classes.categoryHeader}>
           <ListItemIcon className={clsx(classes.itemIcon,classes.appIcon)}>
             <AppsIcon />

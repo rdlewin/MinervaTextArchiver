@@ -1,7 +1,10 @@
-import {format} from "date-fns";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 import React from "react";
+import axios from "axios";
+import Store from "../store/Store";
+import {constants} from "./constants";
+
 
 export function getInitials(userName){
     if (userName){
@@ -71,7 +74,8 @@ export function stringToColour (str) {
 
 export function formatDate(date) {
     if (date){
-        return format(new Date(date), 'dd/MM/yyyy');
+        // return format(new Date(date), 'dd/MM/yyyy');
+        return new Date(date).toLocaleString();
     }
     return '';
 
@@ -88,4 +92,25 @@ export function Copyright() {
             {'.'}
         </Typography>
     );
+}
+
+export async function doSignIn(username, password){
+    const postObj = {
+        username: username,
+        password: password
+    };
+    const response = await axios.post('/account/token', postObj);
+    // console.log(response);
+    localStorage.setItem('token',response.data.access);
+    const userRes = await axios.get('/account/details', {
+        headers:{
+            authorization: 'Bearer ' + response.data.access
+        }
+    });
+    // console.log(userRes);
+    Store.setUser({
+        [constants.userToken]:response.data.access,
+        [constants.userName]:userRes.data.username,
+        [constants.userID]:userRes.data.id
+    });
 }

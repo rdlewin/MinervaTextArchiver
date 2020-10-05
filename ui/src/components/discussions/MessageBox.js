@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
-import {getInitials, stringToColour} from "../../utils/utils";
+import {formatDate, getInitials, stringToColour} from "../../utils/utils";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
@@ -40,7 +40,7 @@ class MessageBox extends Component{
                             </Avatar>
                         }
                         title={`${data.sender_name}`}
-                        subheader={`${data.sent_date}`}
+                        subheader={`${formatDate(data.sent_date)}`}
 
                     />
                     <CardContent>

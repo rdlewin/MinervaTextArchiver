@@ -11,7 +11,6 @@ import {Skeleton} from "@material-ui/lab";
 
 const styles = (theme) => ({
     root: {
-        // height: 110,
         flexGrow: 1,
 
     },
