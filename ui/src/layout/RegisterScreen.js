@@ -154,7 +154,7 @@ class RegisterScreen extends Component {
         const {user_uid, token} = this.props.match.params;
         const id = decode(user_uid);
         const url = `/account/register/${user_uid}/${token}`;
-        console.log('register- post url:',url);
+        // console.log('register- post url:',url);
 
         try {
             const response = await axios.get(url);
@@ -172,7 +172,7 @@ class RegisterScreen extends Component {
         const {user_uid, token} = this.props.match.params;
         const id = decode(user_uid);
         const url = `/account/register/${user_uid}/${token}`;
-        console.log('register- post url:',url);
+        // console.log('register- post url:',url);
         const postObj = {
             username: this.state.username.toLowerCase(),
             password: this.state.password1

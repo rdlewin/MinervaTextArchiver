@@ -48,7 +48,7 @@ class CommentsList extends Component {
         const expanded = this.getParents(rootElement,[]);
 
 
-        console.log(expanded);
+        // console.log(expanded);
         return (
                 <TreeView
                     className={classes.root}

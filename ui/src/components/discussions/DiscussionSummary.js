@@ -69,7 +69,7 @@ const styles = (theme) => ({
      };
 
     componentDidMount() {
-        console.log('discussion Summary data:',this.props.data);
+        // console.log('discussion Summary data:',this.props.data);
         this.disposer = reaction(()=>Store.lastUpdate,
             (lastUpdate)=>{
             // console.log('reseting comments', lastUpdate);
@@ -101,7 +101,7 @@ const styles = (theme) => ({
     onLoadComments = () => {
         this.setState({commentsLoading : true, commentsInitiated : true});
          this.getComments().then(data=>{
-             console.log(data);
+             // console.log(data);
              this.setState({
                  disabled : true,
                  commentsLoading : false,

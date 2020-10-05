@@ -63,7 +63,7 @@ class SignInScreen extends Component {
     };
 
     componentDidMount() {
-        console.log(this.props);
+        // console.log(this.props);
         this.setState({from:this.props.location.state.from});
     }
 
@@ -98,7 +98,7 @@ class SignInScreen extends Component {
             }
 
         } catch (err) {
-            console.log('error:',err.response);
+            // console.log('error:',err.response);
             if (err.response.status === 401){
                 this.setState({error:'Bad User Name or Password!', password:''});
             }

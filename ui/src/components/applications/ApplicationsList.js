@@ -126,7 +126,7 @@ class ApplicationsList extends Component {
 
         this.disposer = autorun(()=>{
             this.getApplicationsList().then(data=>{
-                console.log('applist:',data);
+                // console.log('applist:',data);
                 let error = '';
                 if (data.length === 0){
                     error = 'No Applications Returned!!';
@@ -150,7 +150,7 @@ class ApplicationsList extends Component {
         const postObj = {
             user_id: Store.user[constants.userID],
         };
-        console.log('applications did mount', postObj);
+        // console.log('applications did mount', postObj);
         const response = await axios.post('apps/groups',postObj,{
             headers:{
                 authorization: 'Bearer ' + Store.user[constants.userToken]
@@ -180,7 +180,7 @@ class ApplicationsList extends Component {
                     classes.active :
                     null;
                 return (
-                    <div key={data.app_id} className={classes.root}>
+                    <div key={data.app_name} className={classes.root}>
                         <Accordion className={classes.item}>
                             <AccordionSummary
                                 className={activeApp}

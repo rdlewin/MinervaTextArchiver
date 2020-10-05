@@ -53,7 +53,7 @@ function HashtagFilter (props) {
                 },
             });
             const {data} = response;
-            console.log('hashtags-data: ' ,data);
+            // console.log('hashtags-data: ' ,data);
             if (active) {
                 setOptions(Array.from(new Set(data.hashtags)));
             }
@@ -100,7 +100,7 @@ function HashtagFilter (props) {
             options={options}
             loading={loading}
             onChange={onChange}
-            popoverProps={{ style: { width: 'auto'} }}
+            popoverprops={{ style: { width: 'auto'} }}
             renderInput={(params) => (
                 <TextField
                     {...params}

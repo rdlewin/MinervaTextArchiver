@@ -17,7 +17,7 @@ class AddApp extends Component {
         openError2:false,
     }
     componentDidMount() {
-        console.log('register', this.props);
+        // console.log('register', this.props);
         this.checkUser();
 
     }
@@ -25,7 +25,7 @@ class AddApp extends Component {
     checkUser(){
         if (!Store.signedIn){
             this.setState({needSignIn:true});
-            console.log('not signed');
+            // console.log('not signed');
         }
         else{
             this.onAddApp();
@@ -37,15 +37,15 @@ class AddApp extends Component {
 
 
     async onAddApp(){
-        console.log('inside add app onaddApp');
+        // console.log('inside add app onaddApp');
         await Store.validate();
-        console.log('user',Store.user[constants.userID]);
+        // console.log('user',Store.user[constants.userID]);
         const {user_uid, token, app_id,app_user_uid} = this.props.match.params;
         const id = decode(user_uid);
         if (Store.user[constants.userID] == id){
 
             const url = `/account/add_app/${user_uid}/${token}/${app_id}/${app_user_uid}`;
-            console.log('addApp post url:',url)
+            // console.log('addApp post url:',url)
             try {
                 const response = await axios.post(url, {},{
                     headers: {

@@ -9,8 +9,8 @@ class Store{
 
     @action setFilter(newFilter){
         this.filters = Object.assign({},this.filters, newFilter);
-        console.log('filter update:', toJS(this.filters));
-        console.log(JSON.stringify(toJS(this.filters)));
+        // console.log('filter update:', toJS(this.filters));
+        // console.log(JSON.stringify(toJS(this.filters)));
 
     }
 
@@ -28,7 +28,7 @@ class Store{
 
     @action setUser(userAttrib){
         this.user=Object.assign({},this.user, userAttrib);
-        console.log('user update:', toJS(this.user));
+        // console.log('user update:', toJS(this.user));
     }
 
    @computed get signedIn (){
@@ -53,7 +53,7 @@ class Store{
                     }
                 })
 
-                console.log('inside validate');
+                // console.log('inside validate');
                 this.setUser({
                     [constants.userName]: userRes.data.username,
                     [constants.userID]: userRes.data.id

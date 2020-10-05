@@ -64,7 +64,7 @@ class DiscussionScreen extends Component{
 
 
     onSearchChanged = (event) =>{
-        console.log(event.target.value);
+        // console.log(event.target.value);
         Store.setFilter({[constants.filterFreeText]:event.target.value});
     }
 
@@ -95,14 +95,14 @@ class DiscussionScreen extends Component{
             page_num: 0,
             page_size: 100
         };
-        console.log(postObj);
+        // console.log(postObj);
         try {
             const response = await axios.post('discussions/summary', postObj,{
                 headers:{
                     authorization: 'Bearer ' + Store.user[constants.userToken]
                 },
             })
-            console.log('discussions',response);
+            // console.log('discussions',response);
             const discussions = (response.data.discussions.length > 0)?
                 response.data.discussions:
                 [{discussion_id:'error'}];
