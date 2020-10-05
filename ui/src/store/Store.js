@@ -4,7 +4,7 @@ import axios from 'axios';
 
 class Store{
     @observable filters = {
-        [constants.filterGroup] : []
+       [constants.filterGroup] : []
     };
 
     @action setFilter(newFilter){

@@ -86,7 +86,7 @@ class SignInScreen extends Component {
 
     async signIn(){
         try {
-            await doSignIn(this.state.username,this.state.password);
+            await doSignIn(this.state.username.toLowerCase(),this.state.password);
             this.setState({signedIn:true});
             if (this.props.addApp){
                 this.props.addApp();

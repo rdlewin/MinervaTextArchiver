@@ -176,7 +176,7 @@ class ApplicationsList extends Component {
 
             dataList.map(data=> {
                 const {groups} = data;
-                const activeApp = Store.filters[constants.filterApp] === data.app_id ?
+                const activeApp = Store.filters[constants.filterApp] === data.app_name ?
                     classes.active :
                     null;
                 return (
@@ -189,12 +189,12 @@ class ApplicationsList extends Component {
                                 id="panel1a-header"
                             >
                                 <Button value={data.app_name}
-                                        onClick={(event) => this.onAppClick(event, data.app_id)}
+                                        onClick={(event) => this.onAppClick(event, data.app_name)}
                                         className={clsx(classes.heading, classes.item,activeApp)}>{data.app_name}</Button>
                             </AccordionSummary>
                             <AccordionDetails className={classes.groups}>
                                 {groups.map((group) => (
-                                    <GroupItem key={group.id} appId={data.app_id}
+                                    <GroupItem key={group.id} appName={data.app_name}
                                                onClick={this.onGroupClicked} group={group}/>
 
                                 ))}

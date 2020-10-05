@@ -174,12 +174,12 @@ class RegisterScreen extends Component {
         const url = `/account/register/${user_uid}/${token}`;
         console.log('register- post url:',url);
         const postObj = {
-            username: this.state.username,
+            username: this.state.username.toLowerCase(),
             password: this.state.password1
         };
         try {
             const response = await axios.post(url, postObj);
-            await doSignIn(this.state.username,this.state.password1);
+            await doSignIn(this.state.username.toLowerCase(),this.state.password1);
             this.setState({openSuccess:true});
 
         }

@@ -35,15 +35,15 @@ const StyledBadge = withStyles((theme) => ({
 class GroupItem extends Component {
 
     render(){
-        const {group,onClick,classes,appId} = this.props
-        const activeGroup = Store.filters[constants.filterApp] === appId
-            && Store.filters[constants.filterGroup].find(item=> item === group.group_id)?
+        const {group,onClick,classes,appName} = this.props
+        const activeGroup = Store.filters[constants.filterApp] === appName
+            && Store.filters[constants.filterGroup].find(item=> item === group.id)?
             clsx(classes.active,classes.root) :
             classes.root;
         return (
-            <div key={group.group_id} className={activeGroup}>
+            <div key={group.id} className={activeGroup}>
 
-                    <Button className={activeGroup} onClick={()=>onClick(group.id,appId)} fullWidth={true}>
+                    <Button className={activeGroup} onClick={()=>onClick(group.id,appName)} fullWidth={true}>
 
                             {group.name || "Group"}
 
