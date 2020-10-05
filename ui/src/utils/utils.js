@@ -75,7 +75,7 @@ export function stringToColour (str) {
 export function formatDate(date) {
     if (date){
         // return format(new Date(date), 'dd/MM/yyyy');
-        return new Date(date).toLocaleString();
+        return new Date(date).toLocaleString('he-IL',{hour12:false,timeStyle:"short",dateStyle:"short"});
     }
     return '';
 
