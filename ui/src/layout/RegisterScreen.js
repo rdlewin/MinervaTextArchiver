@@ -64,11 +64,13 @@ class RegisterScreen extends Component {
     state = {
         username: '',
         email: '',
+        phone:'',
         password1: '',
         password2: '',
         errors:{
             username: '',
             email: '',
+            phone:'',
             password1: '',
             password2: ''
         },
@@ -98,6 +100,7 @@ class RegisterScreen extends Component {
 
     validate = (name,value) =>{
         let error;
+        let regex;
         switch (name){
             case 'username':
                 if (value.length < 4){
@@ -105,14 +108,29 @@ class RegisterScreen extends Component {
                 }
                 break;
             case 'email':
-                const regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
+                regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
                 if (!regex.test(value)){
                     error = 'Please Enter a Valid E-Mail';
+                }
+                break;
+            case 'phone':
+                regex = /^\d{9,12}$/gm;
+                if (!regex.test(value)){
+                    error = 'Phone must be Digits only. Length must be Between 9 to 12 ';
                 }
                 break;
             case 'password1':
                 if (value.length < 6){
                     error = 'User Name Must be at least 6 letters. ';
+                }
+                if (this.state.password2 !== value){
+                    this.setState(prevstate=>{
+                        const newState = { ...prevstate };
+                        newState.errors = {...prevstate.errors};
+                        newState.errors['password2'] = 'Passwords are not the same';
+                        return newState;
+                    });
+
                 }
                 break;
             case 'password2':
@@ -159,7 +177,8 @@ class RegisterScreen extends Component {
         try {
             const response = await axios.get(url);
             this.setState({
-                username: response.data.username
+                username: response.data.username,
+
             });
             this.setState({loading:false});
         }
@@ -176,7 +195,9 @@ class RegisterScreen extends Component {
         const postObj = {
             username: this.state.username.toLowerCase(),
             password: this.state.password1,
-            email: this.state.email
+            email: this.state.email,
+            phone: this.state.phone,
+
         };
         try {
             const response = await axios.post(url, postObj);
@@ -247,6 +268,19 @@ class RegisterScreen extends Component {
                                     onChange={this.onInputChange}
                                     error={this.state.errors.email}
                                     helperText={this.state.errors.email}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    id="phone"
+                                    label="Phone Number"
+                                    name="phone"
+                                    autoComplete="off"
+                                    value={this.state.phone}
+                                    onChange={this.onInputChange}
+                                    error={this.state.errors.phone}
+                                    helperText={this.state.errors.phone}
                                 />
                                 <TextField
                                     variant="outlined"

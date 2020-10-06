@@ -23,10 +23,13 @@ const styles = () => ({
 })
 
 function RadioButtonsGroup(props) {
-    const date = new Date();
-    date.setDate(date.getDate() -7);
-    const [selectedFromDate, setSelectedFromDate] = React.useState(new Date(date));
-    const [selectedToDate, setSelectedToDate] = React.useState(new Date());
+    const dateFrom = new Date();
+    dateFrom.setDate(dateFrom.getDate() -7);
+    dateFrom.setHours(0,0,0,0);
+    const dateTo = new Date();
+    dateTo.setHours(23,59,59,999);
+    const [selectedFromDate, setSelectedFromDate] = React.useState(new Date(dateFrom));
+    const [selectedToDate, setSelectedToDate] = React.useState(new Date(dateTo));
     const [disabled, setDisabled] = React.useState(true);
     const [exited, setExited] = React.useState(false);
 
@@ -64,14 +67,19 @@ function RadioButtonsGroup(props) {
                 timeTo.setHours(23,59,59,999);
                 break;
             case constants.radioLastWeek:
-                timeFrom.setDate(timeFrom.getDate() - 7).setHours(0,0,0,0) ;
+                timeFrom.setDate(timeFrom.getDate() - 7);
+                timeFrom.setHours(0,0,0,0) ;
                 break;
             case constants.radioLastMonth:
-                timeFrom.setMonth(timeFrom.getMonth() - 1).setHours(0,0,0,0) ;
+                timeFrom.setMonth(timeFrom.getMonth() - 1);
+                timeFrom.setHours(0,0,0,0) ;
                 break;
             case constants.radioCustom:
-                timeTo = selectedToDate.setHours(23,59,59,999);
-                timeFrom = selectedFromDate.setHours(0,0,0,0);
+                timeTo = new Date(selectedToDate);
+                timeTo.setHours(23,59,59,999);
+
+                timeFrom = new Date(selectedFromDate);
+                timeFrom.setHours(0,0,0,0);
                 break;
             default: //All
                 timeTo = null;
