@@ -60,17 +60,18 @@ function RadioButtonsGroup(props) {
         let timeTo = new Date();
         switch (event.target.value){
             case constants.radioToday:
-                timeFrom = timeTo;
+                timeFrom.setHours(0,0,0,0) ;
+                timeTo.setHours(23,59,59,999);
                 break;
             case constants.radioLastWeek:
-                timeFrom.setDate(timeFrom.getDate() - 7);
+                timeFrom.setDate(timeFrom.getDate() - 7).setHours(0,0,0,0) ;
                 break;
             case constants.radioLastMonth:
-                timeFrom.setMonth(timeFrom.getMonth() - 1);
+                timeFrom.setMonth(timeFrom.getMonth() - 1).setHours(0,0,0,0) ;
                 break;
             case constants.radioCustom:
-                timeTo = selectedToDate;
-                timeFrom = selectedFromDate;
+                timeTo = selectedToDate.setHours(23,59,59,999);
+                timeFrom = selectedFromDate.setHours(0,0,0,0);
                 break;
             default: //All
                 timeTo = null;

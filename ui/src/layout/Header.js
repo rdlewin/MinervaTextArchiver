@@ -8,9 +8,9 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
-import Store from "../../store/Store";
+import Store from "../store/Store";
 import {autorun} from "mobx";
-import UserDetails from "./UserDetails";
+import UserDetails from "../components/nav/UserDetails";
 import {NavLink} from "react-router-dom";
 
 import HomeIcon from '@material-ui/icons/Home';

@@ -10,10 +10,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import AppsIcon from '@material-ui/icons/Apps';
-import ApplicationsList from "../applications/ApplicationsList";
+import ApplicationsList from "../components/applications/ApplicationsList";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import HashtagFilter from "../filters/HashtagFilter";
-import TimeFiltersRadio from "../filters/TimeFiltersRadio";
+import HashtagFilter from "../components/filters/HashtagFilter";
+import TimeFiltersRadio from "../components/filters/TimeFiltersRadio";
 
 const categories = [
   {

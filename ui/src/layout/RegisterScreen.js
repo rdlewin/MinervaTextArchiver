@@ -175,7 +175,8 @@ class RegisterScreen extends Component {
         // console.log('register- post url:',url);
         const postObj = {
             username: this.state.username.toLowerCase(),
-            password: this.state.password1
+            password: this.state.password1,
+            email: this.state.email
         };
         try {
             const response = await axios.post(url, postObj);
