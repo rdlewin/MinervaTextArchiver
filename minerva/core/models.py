@@ -90,19 +90,15 @@ def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, u
     chat_group.members.add(user)
 
 
-def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
-                  message_date, sender_obj, new_user_callback=None, reply_message_id=None, edit_date=None,
-                  sender_email=None):
+async def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
+                        message_date, sender_obj, new_user_callback=None, reply_message_id=None, edit_date=None,
+                        sender_email=None):
     chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
                                                                 app_chat_id=chat_group_id)
-    if group_created:
-        chat_group.name = chat_group_name
-        logging.info('New group names "%s" created' % chat_group.name)
 
-    new_message = Message.objects.filter(app_message_id=message_id,
-                                         chat_group=chat_group).first()
+    message = Message.objects.filter(app_message_id=message_id, chat_group=chat_group).first()
 
-    if not new_message:
+    if not message:
         app_sender = AppUsers.objects.filter(app=chat_app, user_app_id=sender_id).first()
         if not app_sender:
             try:
@@ -114,7 +110,7 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
                         user_app_id=sender_id
                     )
                     if new_user_callback:
-                        new_user_callback(sender_obj, new_user)
+                        await new_user_callback(sender_obj, new_user)
             except Exception as e:
                 logging.error('Error occurred storing new User: %s', e)
                 return None
@@ -124,7 +120,7 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
             reply_to = Message.objects.filter(app_message_id=reply_message_id,
                                               chat_group=chat_group).first()
 
-        new_message = Message(
+        message = Message(
             app_message_id=message_id,
             sent_date=message_date,
             last_updated=message_date,
@@ -133,15 +129,19 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
             reply_to=reply_to
         )
 
-    new_message.content = message_content
+    message.content = message_content
 
     if edit_date:
-        new_message.last_updated = edit_date
+        message.last_updated = edit_date
 
-    new_message.save()
+    message.save()
+
+    if not chat_group.members.filter(pk=message.sent_by.id).exists():
+        chat_group.members.add(message.sent_by)
+        chat_group.save()
 
     for hashtag_content in re.findall(r"#(\w+)", message_content):
         hashtag, _ = Hashtag.objects.get_or_create(content=hashtag_content)
-        new_message.hashtags.add(hashtag)
+        message.hashtags.add(hashtag)
 
-    return new_message
+    return message
