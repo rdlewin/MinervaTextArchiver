@@ -27,9 +27,12 @@ class DiscordBot(discord.Client):
 
         log_message(message.content, sender_id, sender_name, self.chat_app.name)
 
-        chat_group_name = '{}.{}'.format(message.guild.name, message.channel.name)
+        if message.channel:
+            chat_group_name = '{}.{}'.format(message.guild.name, message.channel.name)
+        else:
+            chat_group_name = message.guild.name
 
-        new_message = store_message(
+        new_message = await store_message(
             chat_app=self.chat_app,
             chat_group_id=message.channel.id,
             chat_group_name=chat_group_name,
@@ -40,8 +43,7 @@ class DiscordBot(discord.Client):
             message_date=message.created_at,
             sender_obj=message.author,
             new_user_callback=self.send_welcome_message,
-            edit_date=message.edited_at,
-            sender_email=message.author.email)
+            edit_date=message.edited_at)
 
         if new_message:
             message_stored.send(self.__class__, message=new_message)
@@ -59,6 +61,6 @@ class DiscordBot(discord.Client):
     async def on_guild_join(self, guild: discord.Guild):
         pass
 
-    def send_welcome_message(self, app_user: DiscordUser, minerva_user: MinervaUser):
+    async def send_welcome_message(self, app_user: DiscordUser, minerva_user: MinervaUser):
         content = get_welcome_message(minerva_user, self.chat_app.id, app_user.id)
-        app_user.send(content=content)
+        await app_user.send(content=content)
