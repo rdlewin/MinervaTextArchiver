@@ -44,7 +44,7 @@ class TelegramBot(object):
     def start(self, update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
-    def on_message(self, update, context):
+    async def on_message(self, update, context):
         app_message = update.message
         sender_id = app_message.from_user.id
         sender_name = app_message.from_user.full_name
@@ -55,7 +55,7 @@ class TelegramBot(object):
         if app_message.reply_to_message:
             reply_message_id = app_message.reply_to_message.message_id
 
-        new_message = store_message(
+        new_message = await store_message(
             chat_app=self.chat_app,
             chat_group_id=app_message.chat.id,
             chat_group_name=app_message.chat.title,
@@ -81,6 +81,6 @@ class TelegramBot(object):
         if new_message:
             message_stored.send(self.__class__, message=new_message)
 
-    def send_welcome_message(self, app_user: TelegramUser, minerva_user: MinervaUser):
+    async def send_welcome_message(self, app_user: TelegramUser, minerva_user: MinervaUser):
         content = get_welcome_message(minerva_user, self.chat_app.id, app_user.id)
         app_user.send_message(content)
