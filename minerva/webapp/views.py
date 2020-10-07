@@ -80,6 +80,8 @@ class DiscussionSummaryView(APIView):
             discussions = discussions.filter(first_message__sent_date__gte=filters.get('min_date'))
         if filters.get('max_date'):
             discussions = discussions.filter(messages__last_updated__lte=filters.get('max_date'))
+        if filters.get('hashtags'):
+            discussions = discussions.filter(hashtag__content__in=filters.get('hashtags'))
         # if filters.get('freetext_search'):
         #     discussions = discussions.filter(messages__chat_group_id__in=filters.get('freetext_search'))
         discussions = discussions.distinct()
@@ -236,10 +238,16 @@ class UserRegisterView(APIView):
 
         username = request_serializer.data.get('username')
         password = request_serializer.data.get('password')
+        email = request_serializer.data.get('email')
+        phone = request_serializer.data.get('phone')
 
         if user.username != username:
             user.username = username
         user.set_password(password)
+        if email:
+            user.email = email
+        if phone:
+            user.phone_number = phone
         user.save()
 
         return HttpResponse(status=status.HTTP_201_CREATED)

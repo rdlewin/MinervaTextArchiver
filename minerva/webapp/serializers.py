@@ -166,3 +166,5 @@ class UserHashtagsSerializer(serializers.Serializer):
 class UserRegisterRequestSerializer(serializers.Serializer):
     username = serializers.CharField(required=True, allow_blank=False)
     password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'})
+    email = serializers.EmailField(required=False, allow_blank=True)
+    phone = serializers.CharField(required=False, allow_blank=True)
