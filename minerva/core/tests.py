@@ -4,7 +4,8 @@ import pytz
 from django.test import TestCase
 
 from minerva.core import models
-from minerva.core.models import Message, ChatApp, User, ChatGroup
+from minerva.core.models import Message, ChatApp, User
+from minerva.core.utils import ChatGroup
 
 
 class CoreModelTestCase(TestCase):

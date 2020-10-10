@@ -10,7 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from minerva.core.models import Discussion, Message, ChatGroup, User, AppUsers
+from minerva.core.models import Discussion, Message, User, AppUser
+from minerva.core.utils import ChatGroup
 from minerva.webapp.serializers import (
     AppGroupsSerializer,
     DiscussionMessageRequestSerializer,
@@ -296,9 +297,9 @@ class UserAddAppView(APIView):
             return JsonResponse({'error': 'Invalid User App ID %s' % user_app_uid},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        AppUsers.objects.create(app_id=app_id,
-                                user_id=user.id,
-                                user_app_id=user_app_id)
+        AppUser.objects.create(app_id=app_id,
+                               user_id=user.id,
+                               user_app_id=user_app_id)
         return HttpResponse(status=status.HTTP_201_CREATED)
 
 

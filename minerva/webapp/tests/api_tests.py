@@ -6,7 +6,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from minerva.core import models
-from minerva.core.models import User, ChatGroup, ChatApp, Discussion, Hashtag
+from minerva.core.models import User, ChatApp, Discussion, Hashtag
+from minerva.core.utils import ChatGroup
 
 
 class ApiTestCase(TestCase):

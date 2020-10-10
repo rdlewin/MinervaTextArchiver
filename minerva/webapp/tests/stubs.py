@@ -1,10 +1,11 @@
 import random
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 import pytest
 
-from minerva.core.models import ChatApp, ChatGroup, User, Message, AppUsers
+from minerva.core.models import ChatApp, User, Message, AppUser
+from minerva.core.utils import ChatGroup
 
 
 @pytest.fixture()
@@ -46,7 +47,7 @@ def user_factory(chat_app: ChatApp,
             email=email,
         )
         user.chat_groups.add(chat_group)
-        AppUsers.objects.create(user=user, app=chat_app, user_app_id=user_app_id)
+        AppUser.objects.create(user=user, app=chat_app, user_app_id=user_app_id)
 
         return user
 

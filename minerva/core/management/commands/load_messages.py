@@ -2,7 +2,8 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from minerva.core.models import ChatGroup, ChatApp, User, AppUsers, Hashtag, Discussion, Message
+from minerva.core.models import ChatApp, User, AppUser, Hashtag, Discussion, Message
+from minerva.core.utils import ChatGroup
 
 
 class Command(BaseCommand):
@@ -54,9 +55,9 @@ class Command(BaseCommand):
 
             user_app_id = member.get('app_user_id')
 
-            app_user = AppUsers.objects.create(user=user,
-                                               app=chat_app,
-                                               user_app_id=user_app_id)
+            app_user = AppUser.objects.create(user=user,
+                                              app=chat_app,
+                                              user_app_id=user_app_id)
 
             members.append(user)
         return members
@@ -77,8 +78,8 @@ class Command(BaseCommand):
             sender_user_app_id = message_details.get('sent_by_id')
             reply_to_id = message_details.get('reply_to_id')
             content = message_details.get('content')
-            sent_by = AppUsers.objects.filter(app=chat_app,
-                                              user_app_id=sender_user_app_id).first().user
+            sent_by = AppUser.objects.filter(app=chat_app,
+                                             user_app_id=sender_user_app_id).first().user
             reply_to = None
             if reply_to_id:
                 reply_to = Message.objects.filter(app_message_id=app_message_id,
