@@ -76,14 +76,6 @@ class DiscussionMessageViewTest(ApiTestCase):
         self.assertDictEqual(response_content[0], expected[0])
 
 
-# class ConversationStatsViewTest(ApiTestCase):
-#
-#     def test(self):
-#         client = RequestsClient()
-#         response = client.get('http://testserver/users/')
-#         self.assertEquals(response.status_code, 200)
-
-
 class DiscussionSummaryViewTest(ApiTestCase):
     def test(self):
         url = reverse('discussion_summary')

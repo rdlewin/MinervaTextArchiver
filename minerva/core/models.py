@@ -24,10 +24,6 @@ class Discussion(models.Model):
     first_message = models.ForeignKey('Message', null=False, on_delete=models.DO_NOTHING, related_name='+')
     hashtag = models.ForeignKey('Hashtag', null=True, blank=True, on_delete=models.CASCADE)
 
-    # TODO: should be populated
-    def from_hash_tag(self):
-        pass
-
     def __str__(self):
         if not self.hashtag:
             return str(self.id)
