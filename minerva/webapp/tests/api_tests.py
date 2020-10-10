@@ -7,7 +7,6 @@ from rest_framework.test import APIClient
 
 from minerva.core import models
 from minerva.core.models import User, ChatGroup, ChatApp, Discussion, Hashtag
-from minerva.webapp.tests.stubs import message_factory
 
 
 class ApiTestCase(TestCase):
@@ -69,7 +68,6 @@ class DiscussionMessageViewTest(ApiTestCase):
                 }
             ],
             'reply_to_id': None,
-            # 'hashtags': [hashtag.content for hashtag in self.message.hashtags.all()],
         }]
         response_content = response.json()
 
@@ -129,7 +127,6 @@ class DiscussionSummaryViewTest(ApiTestCase):
 class GroupStatsViewTest(ApiTestCase):
 
     def test(self):
-        # parameters - user, group, last_updated, app_name
         message_content = "LaFayette"
         message_id = 1800
 
@@ -163,25 +160,3 @@ class GroupStatsViewTest(ApiTestCase):
         self.assertEquals(len(response_content), 1)
         self.assertEquals(len(response_content[0]['groups']), 1)
         self.assertDictEqual(response_content[0], expected)
-
-    '''test cases -
-    - a user, has 1 group, all data is valid
-    - a user with no groups
-    - group without any messages
-    - user id received is invalid / None / does not match any id in the DB
-    - a user, one of the outputs is invalid (test for different arguments / outputs)
-    - a user with multiple groups - validate that the returned value is valid
-    - a member has access to data only for groups he is a member of
-    - same ChatGroup ID for 2 groups in 2 different apps - check that our product differentiates them 
-    '''
-
-    # request_data = {
-    #     'user_id': self.user.id,
-    #     'filters': {
-    #         'group_ids': None,
-    #         'conversation_ids': None,
-    #         'sender_ids': None,
-    #         'min_date': None,
-    #         'max_date': None,
-    #         'freetext_search': "",
-    #     },

@@ -1,10 +1,7 @@
 import json
 
-from django import forms
-from django.contrib.auth import admin as auth_admin
 from django.contrib import admin
 
-# Register your models here.
 from minerva.core.models import Message, Discussion, User, Hashtag, ChatApp, AppUsers, ChatGroup
 
 

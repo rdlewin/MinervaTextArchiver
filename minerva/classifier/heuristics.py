@@ -7,19 +7,13 @@ from minerva.core.models import Discussion, Message, Hashtag
 ClassificationResult = namedtuple('ClassificationResult', ['discussion', 'confidence', 'is_new'])
 
 
-# class ClassificationResult(object):
-#     def __init__(self, discussion, confidence, is_new):
-#         self.discussion = discussion
-#         self.confidence = confidence
-#         self.is_new = is_new
-
-
 class AbstractClassifier(ABC):
     def classify(self, message: Message) -> List[ClassificationResult]:
         """
         return:
             Discussion instance - nullable if none found
             Confidence level - default value is 1. Confidence level of the returned classification
+            Confidence level is a scale of 0 to 1, when 1 is the highest value.
         """
         raise NotImplemented
 

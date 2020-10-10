@@ -232,8 +232,3 @@ class ReplyClassifierTest(ClassifierTestCase):
 
         self.assertEquals(classifications, [heuristics.ClassificationResult(parent_discussion_1, 0.5, False),
                                             heuristics.ClassificationResult(parent_discussion_2, 0.5, False)])
-
-    # reply to a message with no discussions
-    # reply to a message with 1 discussion
-    # reply to a message with multiple discussions
-    # reply to a message with X discussions + the reply includes a new hashtag -> creates a new discussion (?) - seems not relevant here

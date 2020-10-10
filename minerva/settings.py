@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
@@ -195,7 +196,5 @@ try:
     from .local_settings import *
 except ImportError:
     pass
-
-import django
 
 django.setup()

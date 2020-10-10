@@ -21,8 +21,6 @@ class MessageSerializer(serializers.Serializer):
     discussions = DiscussionIdSerializer(many=True)
     reply_to_id = serializers.IntegerField()
 
-    # hashtags = serializers.ListField(child=serializers.CharField())
-
     @classmethod
     def from_message(cls, message):
         discussions = []
@@ -51,23 +49,6 @@ class MessageSerializer(serializers.Serializer):
             'reply_to_id': reply_to_id,
             'hashtags': hashtags
         })
-
-    # @property
-    # def data(self):
-    #     return {
-    #         'id': self.id,
-    #         'app_message_id': self.app_message_id,
-    #         'sent_date': self.sent_date,
-    #         'last_updated': self.last_updated,
-    #         'content': self.content,
-    #         'sender_id': self.sent_by.id,
-    #         'sender_name': self.sent_by.name,
-    #         'discussion_ids': self.discussion_ids,
-    #         'discussion_hashtags': self.discussion_hashtags,
-    #         'reply_to_id': self.reply_to_id,
-    #         # 'hashtags': self.hashtags
-    #
-    #     }
 
 
 class DiscussionSummaryFilterSerializer(serializers.Serializer):
