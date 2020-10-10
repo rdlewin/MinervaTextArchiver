@@ -20,6 +20,11 @@ class AbstractClassifier(ABC):
 
 class HashtagClassifier(AbstractClassifier):
     def classify(self, message):
+
+        # relevant for future implementation - when the classifier will return ranging confidence levels -
+        # append only if confidence level > minimal_confidence_level_to_append
+        minimal_confidence_level_to_append = 0.5
+
         message_hashtags = message.hashtags.all().values_list("content", flat=True)
         related_discussions = Discussion.objects.filter(first_message__chat_group=message.chat_group,
                                                         hashtag__content__in=message_hashtags)
