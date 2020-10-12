@@ -43,7 +43,7 @@ def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_
                         user_app_id=sender_id
                     )
                     if new_user_callback:
-                        await new_user_callback(sender_obj, new_user)
+                        asyncio.run(new_user_callback(sender_obj, new_user))
             except Exception as e:
                 logging.error('Error occurred storing new User: %s', e)
                 return None
