@@ -4,8 +4,9 @@ from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 from telegram.user import User as TelegramUser
 
 from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log, get_welcome_message
-from minerva.core.models import ChatApp, store_message, add_user, User as MinervaUser
+from minerva.core.models import ChatApp, User as MinervaUser
 from minerva.core.signals import message_stored
+from minerva.core.utils import store_message, add_user
 
 """
 Telegram bot API documentation: https://core.telegram.org/bots

@@ -4,7 +4,7 @@ import pytz
 from django.test import TestCase
 
 from minerva.classifier import heuristics
-from minerva.core import models
+from minerva.core import utils
 from minerva.core.models import ChatApp, Discussion, Hashtag
 
 
@@ -24,15 +24,14 @@ class HashtagClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time)
 
         self.assertEquals(new_message.hashtags.all().count(), 0)
 
@@ -45,15 +44,15 @@ class HashtagClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None)
 
         self.assertEquals(new_message.hashtags.all().count(), 1)
 
@@ -63,9 +62,10 @@ class HashtagClassifierTest(ClassifierTestCase):
         expected_hashtag, is_new = Hashtag.objects.get_or_create('just_you_wait')
         self.assertFalse(is_new)
 
-        expected_discussion = Discussion(first_message=new_message, hashtag=expected_hashtag)
-
-        self.assertEquals(classifications, [heuristics.ClassificationResult(expected_discussion, 1, True)])
+        self.assertEquals(classifications[0].confidence, 1)
+        self.assertTrue(classifications[0].is_new)
+        self.assertEquals(classifications[0].discussion.first_message, new_message)
+        self.assertEquals(classifications[0].discussion.hashtag, expected_hashtag)
 
     def test_classify_message_two_hashtags(self):
         message_content = "hello world #just_you_wait #MyShot"
@@ -73,15 +73,15 @@ class HashtagClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None)
 
         self.assertEquals(new_message.hashtags.all().count(), 2)
 
@@ -107,15 +107,15 @@ class ReplyClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None)
 
         self.assertEquals(new_message.reply_to, None)
         classifications = heuristics.ReplyClassifier().classify(new_message)
@@ -128,26 +128,26 @@ class ReplyClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        parent_message = models.store_message(self.chat_app,
-                                              group_id,
-                                              self.group_name,
-                                              message_id,
-                                              message_content,
-                                              sender_id,
-                                              self.sender_name,
-                                              self.test_time,
-                                              None)
+        parent_message = utils.store_message(self.chat_app,
+                                             group_id,
+                                             self.group_name,
+                                             message_id,
+                                             message_content,
+                                             sender_id,
+                                             self.sender_name,
+                                             self.test_time,
+                                             None)
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id + 1,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None,
-                                           reply_message_id=parent_message.app_message_id)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id + 1,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None,
+                                          reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
         self.assertEquals(num_of_parent_discussions, 0)
@@ -161,29 +161,29 @@ class ReplyClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        parent_message = models.store_message(self.chat_app,
-                                              group_id,
-                                              self.group_name,
-                                              message_id,
-                                              message_content,
-                                              sender_id,
-                                              self.sender_name,
-                                              self.test_time,
-                                              None)
+        parent_message = utils.store_message(self.chat_app,
+                                             group_id,
+                                             self.group_name,
+                                             message_id,
+                                             message_content,
+                                             sender_id,
+                                             self.sender_name,
+                                             self.test_time,
+                                             None)
 
         parent_discussion = Discussion.objects.create(first_message=parent_message, hashtag=None)
         parent_message.discussions.add(parent_discussion)
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id + 1,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None,
-                                           reply_message_id=parent_message.app_message_id)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id + 1,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None,
+                                          reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
         self.assertEquals(num_of_parent_discussions, 1)
@@ -198,15 +198,15 @@ class ReplyClassifierTest(ClassifierTestCase):
         sender_id = 1234
         message_id = 12345
 
-        parent_message = models.store_message(self.chat_app,
-                                              group_id,
-                                              self.group_name,
-                                              message_id,
-                                              message_content,
-                                              sender_id,
-                                              self.sender_name,
-                                              self.test_time,
-                                              None)
+        parent_message = utils.store_message(self.chat_app,
+                                             group_id,
+                                             self.group_name,
+                                             message_id,
+                                             message_content,
+                                             sender_id,
+                                             self.sender_name,
+                                             self.test_time,
+                                             None)
 
         parent_discussion_1 = Discussion.objects.create(first_message=parent_message, hashtag=None)
         parent_discussion_2 = Discussion.objects.create(first_message=parent_message, hashtag=None)
@@ -214,16 +214,16 @@ class ReplyClassifierTest(ClassifierTestCase):
         parent_message.discussions.add(parent_discussion_1)
         parent_message.discussions.add(parent_discussion_2)
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id + 1,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time,
-                                           None,
-                                           reply_message_id=parent_message.app_message_id)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id + 1,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time,
+                                          None,
+                                          reply_message_id=parent_message.app_message_id)
 
         num_of_parent_discussions = new_message.reply_to.discussions.all().count()
         self.assertEquals(num_of_parent_discussions, 2)

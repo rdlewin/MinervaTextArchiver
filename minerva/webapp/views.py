@@ -10,8 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from minerva.core.models import Discussion, Message, User, AppUser
-from minerva.core.utils import ChatGroup
+from minerva.core.models import Discussion, Message, User, AppUser, ChatGroup
 from minerva.webapp.serializers import (
     AppGroupsSerializer,
     DiscussionMessageRequestSerializer,

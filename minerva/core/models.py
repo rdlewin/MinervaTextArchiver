@@ -56,3 +56,14 @@ class AppUser(models.Model):
     user = models.ForeignKey('User', null=False, on_delete=models.CASCADE)
     app = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE)
     user_app_id = models.CharField(null=False, blank=False, max_length=64)
+
+
+class ChatGroup(models.Model):
+    app_chat_id = models.CharField(null=False, blank=False, max_length=64)
+    name = models.CharField(null=True, blank=True, max_length=128)
+    application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
+    members = models.ManyToManyField('User', related_name='chat_groups')
+    hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups', blank=True)
+
+    def __str__(self):
+        return f'{self.id}. {self.name}'

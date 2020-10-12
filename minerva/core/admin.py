@@ -2,8 +2,7 @@ import json
 
 from django.contrib import admin
 
-from minerva.core.models import Message, Discussion, User, Hashtag, ChatApp, AppUser
-from minerva.core.utils import ChatGroup
+from minerva.core.models import Message, Discussion, User, Hashtag, ChatApp, AppUser, ChatGroup
 
 
 class MessageAdmin(admin.ModelAdmin):
