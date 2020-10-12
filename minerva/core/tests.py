@@ -10,6 +10,7 @@ from minerva.core.models import Message, ChatApp, User, ChatGroup, AppUser
 class CoreModelTestCase(TestCase):
     def setUp(self):
         self.chat_app = ChatApp.objects.create(name="Telegram")
+        self.chat_app.save()
 
         self.group_name = "test_group"
         self.sender_name = "John Smith"
@@ -36,6 +37,7 @@ class CoreModelTestCase(TestCase):
 
     def test_store_message_existing_group_and_user(self):
         sender = User.objects.create(username=self.sender_name)
+        app_user = AppUser.objects.create(app=self.chat_app, user=sender, user_app_id=123)
         new_group = ChatGroup.objects.create(app_chat_id=1,
                                              name=self.group_name,
                                              application=self.chat_app)
