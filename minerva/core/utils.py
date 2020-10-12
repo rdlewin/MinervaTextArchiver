@@ -1,20 +1,10 @@
+import asyncio
 import logging
 import re
 
-from django.db import models, transaction
+from django.db import transaction
 
-from minerva.core.models import AppUser, User, Message, Hashtag
-
-
-class ChatGroup(models.Model):
-    app_chat_id = models.CharField(null=False, blank=False, max_length=64)
-    name = models.CharField(null=True, blank=True, max_length=128)
-    application = models.ForeignKey('ChatApp', null=False, on_delete=models.CASCADE, related_name='chat_groups')
-    members = models.ManyToManyField('User', related_name='chat_groups')
-    hashtags = models.ManyToManyField('Hashtag', related_name='chat_groups', blank=True)
-
-    def __str__(self):
-        return f'{self.id}. {self.name}'
+from minerva.core.models import AppUser, User, Message, Hashtag, ChatGroup
 
 
 def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, user_email=None):
@@ -30,11 +20,14 @@ def add_user(chat_app, chat_group_id, user_app_id, user_name, user_phone=None, u
     chat_group.members.add(user)
 
 
-async def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
-                        message_date, sender_obj, new_user_callback=None, reply_message_id=None, edit_date=None,
-                        sender_email=None):
-    chat_group, group_created = ChatGroup.objects.get_or_create(application=chat_app,
+def store_message(chat_app, chat_group_id, chat_group_name, message_id, message_content, sender_id, sender_name,
+                  message_date, sender_obj=None, new_user_callback=None, reply_message_id=None, edit_date=None,
+                  sender_email=None):
+    chat_group, group_created = ChatGroup.objects.get_or_create(application_id=chat_app.id,
                                                                 app_chat_id=chat_group_id)
+    if group_created or chat_group.name != chat_group_name:
+        chat_group.name = chat_group_name
+        chat_group.save()
 
     message = Message.objects.filter(app_message_id=message_id, chat_group=chat_group).first()
 

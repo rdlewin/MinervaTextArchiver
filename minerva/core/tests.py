@@ -3,9 +3,8 @@ from datetime import datetime
 import pytz
 from django.test import TestCase
 
-from minerva.core import models
-from minerva.core.models import Message, ChatApp, User
-from minerva.core.utils import ChatGroup
+from minerva.core import utils
+from minerva.core.models import Message, ChatApp, User, ChatGroup, AppUser
 
 
 class CoreModelTestCase(TestCase):
@@ -22,14 +21,14 @@ class CoreModelTestCase(TestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time)
 
         self.assertEquals(new_message.content, message_content)
         self.assertEquals(Message.objects.filter(id=new_message.id).count(), 1)
@@ -46,14 +45,14 @@ class CoreModelTestCase(TestCase):
         message_content = "hello world"
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           new_group.id,
-                                           new_group.name,
-                                           message_id,
-                                           message_content,
-                                           sender.id,
-                                           sender.username,
-                                           self.test_time)
+        new_message = utils.store_message(self.chat_app,
+                                          new_group.id,
+                                          new_group.name,
+                                          message_id,
+                                          message_content,
+                                          app_user.user_app_id,
+                                          sender.username,
+                                          self.test_time)
 
         self.assertEquals(new_message.content, message_content)
         self.assertEquals(Message.objects.filter(id=new_message.id).count(), 1)
@@ -64,14 +63,14 @@ class CoreModelTestCase(TestCase):
         sender_id = 1234
         message_id = 12345
 
-        new_message = models.store_message(self.chat_app,
-                                           group_id,
-                                           self.group_name,
-                                           message_id,
-                                           message_content,
-                                           sender_id,
-                                           self.sender_name,
-                                           self.test_time)
+        new_message = utils.store_message(self.chat_app,
+                                          group_id,
+                                          self.group_name,
+                                          message_id,
+                                          message_content,
+                                          sender_id,
+                                          self.sender_name,
+                                          self.test_time)
 
         self.assertEquals(list(new_message.hashtags.all().values_list('content', flat=True)),
                           ['just_you_wait', 'MyShot'])

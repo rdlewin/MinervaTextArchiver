@@ -2,8 +2,7 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from minerva.core.models import ChatApp, User, AppUser, Hashtag, Discussion, Message
-from minerva.core.utils import ChatGroup
+from minerva.core.models import ChatApp, User, AppUser, Hashtag, Discussion, Message, ChatGroup
 
 
 class Command(BaseCommand):
