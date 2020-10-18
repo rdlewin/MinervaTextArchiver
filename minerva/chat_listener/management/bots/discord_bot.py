@@ -4,8 +4,8 @@ import discord
 from discord import User as DiscordUser
 
 from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log, get_welcome_message
+from minerva.classifier.listeners import classify_message
 from minerva.core.models import ChatApp, User as MinervaUser
-from minerva.core.signals import message_stored
 from minerva.core.utils import store_message, add_user
 
 
@@ -47,7 +47,7 @@ class DiscordBot(discord.Client):
             edit_date=message.edited_at)
 
         if new_message:
-            message_stored.send(self.__class__, message=new_message)
+            classify_message(self.__class__, message=new_message)
 
     async def on_member_join(self, member):
         for channel in member.guild.channels:

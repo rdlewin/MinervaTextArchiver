@@ -4,8 +4,8 @@ from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
 from telegram.user import User as TelegramUser
 
 from minerva.chat_listener.management.bots.utils import log_message, running_bot_with_token_log, get_welcome_message
+from minerva.classifier.listeners import classify_message
 from minerva.core.models import ChatApp, User as MinervaUser
-from minerva.core.signals import message_stored
 from minerva.core.utils import store_message, add_user
 
 """
@@ -80,7 +80,7 @@ class TelegramBot(object):
             )
 
         if new_message:
-            message_stored.send(self.__class__, message=new_message)
+            classify_message(self.__class__, message=new_message)
 
     async def send_welcome_message(self, app_user: TelegramUser, minerva_user: MinervaUser):
         content = get_welcome_message(minerva_user, self.chat_app.id, app_user.id)
