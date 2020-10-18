@@ -1,12 +1,7 @@
-from django.dispatch import receiver
-
-from minerva.core.signals import message_stored
 from . import heuristics
 
 
-@receiver(message_stored)
-def classify_message(sender, **kwargs):
-    message = kwargs.get('message')
+def classify_message(message):
 
     for classifier in heuristics.CLASSIFIERS:
         classifications = classifier.classify(message)
