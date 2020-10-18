@@ -27,7 +27,7 @@ class HashtagClassifier(AbstractClassifier):
         message_hashtags = message.hashtags.all().values_list("content", flat=True)
         related_discussions = Discussion.objects.filter(first_message__chat_group=message.chat_group,
                                                         hashtag__content__in=message_hashtags)
-        related_discussions = related_discussions.select_related("hashtag__content")
+        related_discussions = related_discussions.select_related("hashtag")
 
         existing_hashtags = related_discussions.values_list("hashtag__content", flat=True)
 
@@ -35,7 +35,7 @@ class HashtagClassifier(AbstractClassifier):
 
         for hashtag in message_hashtags:
             if hashtag in existing_hashtags:
-                discussion = related_discussions.filter(hashtag__content=hashtag)
+                discussion = related_discussions.filter(hashtag__content=hashtag).first()
                 classified_discussions.append(ClassificationResult(discussion, 1, False))
             else:
                 new_hashtag, _ = Hashtag.objects.get_or_create(content=hashtag)
