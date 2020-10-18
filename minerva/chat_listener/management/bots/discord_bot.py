@@ -47,7 +47,7 @@ class DiscordBot(discord.Client):
             edit_date=message.edited_at)
 
         if new_message:
-            classify_message(self.__class__, message=new_message)
+            classify_message(new_message)
 
     async def on_member_join(self, member):
         for channel in member.guild.channels:

@@ -80,7 +80,7 @@ class TelegramBot(object):
             )
 
         if new_message:
-            classify_message(self.__class__, message=new_message)
+            classify_message(new_message)
 
     async def send_welcome_message(self, app_user: TelegramUser, minerva_user: MinervaUser):
         content = get_welcome_message(minerva_user, self.chat_app.id, app_user.id)
