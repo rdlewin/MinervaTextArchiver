@@ -14,7 +14,7 @@ pytest==6.1.0
 pytest-django==3.10.0
 python-telegram-bot==12.8
 psycopg2==2.8.6
-pygments==2.7.1
+pygments==2.7.4
 requests==2.24.0
 six==1.15.0
 sqlparse==0.3.1
